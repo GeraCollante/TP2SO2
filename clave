@@ -1,0 +1,9 @@
+ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/Development/SO2/hpc/libs/netcdf/lib/
+
+ valgrind --tool=callgrind --dump-instr=yes --dump-line=yes --collect-jumps=yes --separate-threads=yes --simulate-cache=yes ./bin/tp2 8
+
+gprof test gmon.out > prof_output
+
+perf record -g ./fib
+
+perf report

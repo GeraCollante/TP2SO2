@@ -1,0 +1,21 @@
+\babel@toc {spanish}{}
+\contentsline {section}{\numberline {1}Introducci\IeC {\'o}n}{2}{section.1}
+\contentsline {subsection}{\numberline {1.1}Prop\IeC {\'o}sito}{2}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Objetivo}{2}{subsection.1.2}
+\contentsline {section}{\numberline {2}Descripci\IeC {\'o}n}{2}{section.2}
+\contentsline {subsection}{\numberline {2.1}Requerimientos}{2}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Problema a desarrollar}{2}{subsection.2.2}
+\contentsline {section}{\numberline {3}Desarrollo}{4}{section.3}
+\contentsline {subsection}{\numberline {3.1}Metodolog\IeC {\'\i }a de trabajo}{4}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Descripci\IeC {\'o}n del algoritmo}{4}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Pruebas}{5}{subsection.3.3}
+\contentsline {subsubsection}{\numberline {3.3.1}Host local}{5}{subsubsection.3.3.1}
+\contentsline {subsubsection}{\numberline {3.3.2}Cluster}{5}{subsubsection.3.3.2}
+\contentsline {section}{\numberline {4}\textit {Profiling}}{8}{section.4}
+\contentsline {subsection}{\numberline {4.1}\texttt {gprof}}{9}{subsection.4.1}
+\contentsline {subsubsection}{\numberline {4.1.1}Perfil plano}{9}{subsubsection.4.1.1}
+\contentsline {subsection}{\numberline {4.2}\texttt {perf}}{9}{subsection.4.2}
+\contentsline {subsubsection}{\numberline {4.2.1}Gr\IeC {\'a}fico de llamadas}{10}{subsubsection.4.2.1}
+\contentsline {subsection}{\numberline {4.3}\texttt {cachegrind}}{10}{subsection.4.3}
+\contentsline {subsubsection}{\numberline {4.3.1}\texttt {Kcachegrind}}{11}{subsubsection.4.3.1}
+\contentsline {section}{\numberline {5}Conclusi\IeC {\'o}n}{12}{section.5}

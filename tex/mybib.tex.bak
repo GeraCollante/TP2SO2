@@ -1,0 +1,862 @@
+\documentclass[14.5pt,a4paper]{article}
+\usepackage{graphicx}
+\usepackage[spanish,activeacute]{babel}
+\usepackage{lmodern}
+\usepackage{float}
+\renewcommand{\baselinestretch}{1} % Interlineado. 1 es estandar
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[square,sort,comma,numbers]{natbib}
+\usepackage{mathtools}
+\usepackage{fancyhdr}
+\fancyhead[R]{2019}\fancyhead[L]{UNC - FCEFyN} \fancyfoot[C]{\thepage}
+\pagestyle{fancy}
+\usepackage[numbered]{bookmark} % Para que figure las secciones en el PDF
+
+\begin{document}
+\begin{titlepage}
+	
+	{\scshape\LARGE Universidad Nacional de Córdoba \par}
+	%\vspace{1cm}
+	{\Large Facultad de Ciencias Exactas, Físicas y Naturales \par}
+	\vspace{0.5cm}
+	\centering
+	\includegraphics[width=0.5\textwidth]{unc.png}
+	\par\vspace{0.5cm}
+	\vspace{0.5cm}
+	{\scshape\Large Prácticas Profesionales Supervisadas\par}
+	{\large Primeras 100 hs.\par}
+	\vspace{1.5cm}
+	{\large\bfseries Capacitación de Machine Learning con Redes Neuronales Convolucionales aplicado a imágenes \par}
+	\vspace{1.5cm}
+	{\Large\bfseries Gerardo Collante\par}
+	\vfill
+	supervisado por\par
+	Ing.~Aldo \textsc{Algorry}
+
+	\vfill
+
+% Bottom of the page
+	{\large \today\par}
+\end{titlepage}
+
+%This document is an example of \texttt{natbib} package using in bibliography
+%management. Three items are cited: \textit{The \LaTeX\ Companion} book 
+%\cite{latexcompanion}, the Einstein journal paper \citep{einstein}, and the 
+%Donald Knuth's website. The \LaTeX\ related items are 
+%\citet{poole1998}. 
+
+\tableofcontents
+
+\clearpage
+
+\section{Introducción}
+
+\subsection{Objetivos de las PPS}
+En mis prácticas profesionales supervisadas puse mi foco en el \textit{aprendizaje de máquina} o como se conoce comúnmente, \textit{Machine Learning}, debido a la extensa diversidad de posibilidades que brinda esta tecnología, teniendo por seguridad que en un futuro ser un \textit{commodity} indispensable en cualquier empresa que esta relacionada con el campo de IT aunque no sea su campo de acción principal. 
+
+Por ello decidí realizar mis prácticas contribuyendo a un proyecto de investigación doctoral con el fin de aprender la tecnología.
+
+\subsection{Definiciones}
+En las primeras 100 horas el objetivo fue instruirme sobre la Inteligencia Artificial (IA) ya que no posea ningún conocimiento en el campo.
+El objetivo final eran las Redes Neuronales Convolucionales, \textit{Convolutional Neural Networks, (CNN)} pero ante debía instruirme sobre Redes Neuronales, \textit{Neural Networks (NN)}.
+
+\begin{quote}
+  La \textit{Inteligencia Artificial (Artificial Intelligence)} se define como el estudio de los "agentes inteligentes", i.e. cualquier dispositivo que perciba su entorno y tome medidas que maximicen sus posibilidades de lograr con éxito sus objetivos.
+  
+  \hfill \citet{poole1998}
+\end{quote}
+
+Esta definición nos da la idea de que la IA es un sistema reactivo, que reacciona a cambios externos y actúa en consecuencia, sin embargo, todavía no queda claro el rol del \textit{Aprendizaje de Máquina}.
+
+\begin{quote}
+  El \textit{aprendizaje automático (Machine Learning)} es el estudio científico de algoritmos y modelos estadísticos que los sistemas informáticos utilizan para realizar una tarea específica sin utilizar instrucciones explícitas, sino que se basan en patrones e inferencia. Es visto como un subcampo de inteligencia artificial. Los algoritmos de aprendizaje automático crean un modelo matemático basado en datos de muestra, conocidos como "datos de entrenamiento", para hacer predicciones o decisiones sin ser programado explícitamente para realizar la tarea.
+  
+  \hfill \citet{bishop2006pattern}
+\end{quote}
+
+Aquí se define al ML como una parte de la AI. El siguiente diagrama ayudará a aclarar conceptos \cite{advancedmachinelearningprocess}.
+
+\begin{enumerate}
+
+\item Los datos etiquetados o \textit{labeled data} será el set de entrenamiento o \textit{dataset} que entrenará el modelo predictivo. 
+\item Éste se compone de capas de redes neuronales, que serán entrenadas para un fin determinado, \textit{e.g.} para clasificar los datos en correctos o incorrectos.
+\item Una vez entrenado el modelo pueden ingresar nuevos datos o \textit{new data} para ser clasificados.
+\end{enumerate}
+
+\begin{figure}[H]
+	\begin{center}				
+	\includegraphics[width=0.6\textwidth]{ml_process_diagram.png}
+  	\caption{Diagrama simple de modelo de \textit{Machine Learning}.}
+  	\end{center}
+\end{figure}
+
+\section{Aprendizaje}
+La bibliografia elegida para mi aprendizaje sobre redes neuronales fue \textit{"Make your own neural network"} \cite{rashid2016make} del Dr. Tariq Rashid, debido a que muestra como crear desde un punto de vista matemático una red neuronal desde cero (\textit{scratch}), para luego ser codificada en \textit{Python}.
+
+\subsection{Repaso y conceptos básicos}
+En los primeros capítulos del libro se dan conceptos de funciones y como los métodos iterativos pueden ser utilizados para resolver problemas simples. Queda a cargo del lector revisar la bibliografía para una mayor comprensión del tema en caso que estos conceptos no estén claros. 
+Para un punto de vista más matemático y conciso será utilizada la bibliografía \textit{"Deep Learning for Computer Vision with Python"} \cite{rosebrock2017deep} del Dr. Rosebrock.
+
+\section{Redes neuronales}
+La palabra neuronal es la forma adjetiva de "neurona", y red denota una estructura tipo grafo; por lo tanto, una \textit{Red Neuronal Artificial} es un sistema de computación que intenta imitar (o al menos, está inspirado en) las conexiones neuronales en nuestro sistema nervioso. Las redes neuronales artificiales también se denominan \textit{redes neuronales} o \textit{sistemas neuronales artificiales}. Es común abreviar la red neuronal artificial y referirse a ellas como "NN".
+
+Para que un sistema se considere un NN, debe contener una estructura de grafo dirigida y etiquetada donde cada nodo del gráfico realice un cálculo simple. Según la teoría de grafos, sabemos que un gráfico dirigido consiste en un conjunto de nodos (es decir, vértices) y un conjunto de conexiones (es decir, bordes) que unen pares de nodos.
+
+\begin{itemize}
+\item Las entradas ingresan a la red. 
+\item Cada conexión lleva una señal a través de las dos capas ocultas en la red. 
+\item Una función final calcula la etiqueta de clase de salida.
+\end{itemize}
+
+\begin{figure}[H]
+	\begin{center}				
+	\includegraphics[width=0.6\textwidth]{018.png}
+  	\caption{Arquitectura simple de red neuronal.}
+  	\label{fig:nn}
+  	\end{center}
+\end{figure}
+
+Cada nodo realiza un cálculo simple. Cada conexión transporta una señal (es decir, la salida del cálculo) de un nodo a otro, marcada por un peso que indica el grado en que la señal se amplifica o disminuye. Algunas conexiones tienen grandes pesos positivos que amplifican la señal, lo que indica que la señal es muy importante al hacer una clasificación. Otros tienen pesos negativos, lo que disminuye la intensidad de la señal, lo que especifica que la salida del nodo es menos importante en la clasificación final. Llamamos a dicho sistema una Red Neuronal Artificial si consta de una estructura de grafo (como en la Figura \ref{fig:nn}) con pesos de conexión que se pueden modificar utilizando un algoritmo de aprendizaje.
+
+\subsection{Relación con la biología}
+Nuestros cerebros están compuestos por aproximadamente 10 mil millones de neuronas, cada una conectada a unas 10,000 otras neuronas. El cuerpo celular de la neurona se llama soma, donde las entradas (dendritas) y las salidas (axones) conectan el soma con otro (Figura \ref{fig:realneuron}).
+
+\begin{figure}[H]
+	\begin{center}				
+	\includegraphics[width=0.6\textwidth]{019.png}
+  	\caption{Estructura de una neurona biológica.}
+  	\label{fig:realneuron}
+  	\end{center}
+\end{figure}
+
+
+Cada neurona recibe entradas electroquímicas de otras neuronas en sus dendritas. Si estas entradas eléctricas son lo suficientemente potentes como para activar la neurona, entonces la neurona activada transmite la señal a lo largo de su axón, transmitiéndola a las dendritas de otras neuronas. Estas neuronas unidas también pueden activarse, continuando así el proceso de transmitir el mensaje.
+La conclusión clave aquí es que el disparo de una neurona es una operación binaria: la neurona se dispara o no se dispara. No hay diferentes "grados" de disparo. En pocas palabras, una neurona solo se disparará si la señal total recibida en el soma excede un umbral dado.
+Sin embargo, tenga en cuenta que los ANN simplemente se inspiran en lo que sabemos sobre el cerebro y cómo funciona. El objetivo del aprendizaje profundo no es imitar cómo funcionan nuestros cerebros, sino tomar las piezas que entendemos y permitirnos trazar paralelos similares en nuestro propio trabajo.
+
+\subsection{Modelos artificiales}
+Comencemos por ver un NN básico que realiza una suma ponderada simple de las entradas o \textit{inputs} en la Figura \ref{fig:simplenn}. Los valores $x_1$, $x_2$ y $x_3$ son las \textit{inputs} a nuestro NN y generalmente corresponden a una sola fila (es decir, punto de datos) de nuestra matriz de diseño. El valor constante 1 es nuestro sesgo o \textit{bias} que se supone incrustado en la matriz de diseño. Podemos pensar en estas \textit{inputs} como los vectores de características o \textit{features} de entrada a la NN.
+
+\begin{figure}[H]
+	\begin{center}				
+	\includegraphics[width=0.6\textwidth]{020.png}
+  	\caption{Simple NN.}
+  	\label{fig:simplenn}
+  	\end{center}
+\end{figure}
+
+Cada $x$ está conectada a una neurona a través de un vector de peso $W$ que consiste en $w_1, w_2, \ldots w_n$, lo que significa que para cada entrada $x$ también tenemos un peso asociado $w$.
+Finalmente, el nodo de salida a la derecha toma la suma ponderada, aplica una función de activación $f$ (utilizada para determinar si la neurona se "dispara" o no) y genera un valor. Expresando la salida matemáticamente, normalmente encontrarás las siguientes tres formas:
+\begin{itemize}
+\item $f(w_1x_1 + w_2x_2 + \cdots + w_nx_n)$
+\item $f(\sum_{i=1}^{n} w_ix_i)$	
+\item O $f(net)$, donde $net = \sum_{i=1}^{n} w_ix_i$
+\end{itemize}
+
+\subsection{Funciones de activación}
+La función de activación más simple es la "función de paso", utilizada por el algoritmo Perceptron.
+
+$
+f(net) =
+\left\{
+	\begin{array}{ll}
+		1  	& \mbox{si } net > 0 \\
+		0 	& \mbox{si } net \leq 0
+	\end{array}
+\right.
+$
+
+Esta es una función de umbral muy simple, sin embargo, aunque es fácil de usar e intuitiva, no es diferenciable, lo cual puede llevar a problemas cuando apliquemos el descenso por gradiente.
+Por ello se presentan en la Figura \ref{fig:typesfactivation} diferentes tipos de funciones de activación con sus respectivos gráficos.
+
+\begin{figure}[H]
+	\begin{center}				
+	\includegraphics[width=1\textwidth]{021.png}
+  	\caption{\textbf{Arriba-izquierda}: Función escalón. \textbf{Arriba-derecha}: Función sigmoidea. \textbf{Medio-izquierda}: Tangente hiperbólica. \textbf{Medio-derecha}: activación ReLU (función activación más usada en \textit{Deep Learning}).
+ \textbf{Abajo-izquierda}: Leaky ReLU, variante de ReLU que permite valores negativos. \textbf{Abajo-derecha}:
+ELU, otra variante de ReLU que obtiene mejor performance que Leaky ReLU.}
+  	\label{fig:typesfactivation}
+  	\end{center}
+\end{figure}
+
+Una de las funciones de activación más usadas en la historia de la literatura de NN es la función sigmoidea, que sigue la siguiente ecuación:
+
+\begin{equation}
+t=\sum_{i=1}^{n}w_ix_i \quad s(t)=\frac{1}{1+e^{-t}}
+\end{equation}
+
+La función sigmoidea es una mejor opción para el aprendizaje que la función de paso simple, ya que:
+\begin{enumerate}
+\item Es continua y diferenciable en todas partes.
+\item Es simétrica alrededor del eje y.
+\item Se acerca asintóticamente a sus valores de saturación.
+\end{enumerate}
+La principal ventaja aquí es que la suavidad de la función sigmoidea hace que sea más fácil diseñar algoritmos de aprendizaje. Sin embargo, hay dos grandes problemas con la función sigmoidea:
+\begin{enumerate}
+\item Las salidas del sigmoide no están centradas en cero.
+\item Las neuronas saturadas esencialmente eliminan el gradiente, ya que el delta del gradiente será extremadamente pequeño.
+\end{enumerate}
+
+La tangente hiperbólica, o tanh (con una forma similar del sigmoide) también se usó fuertemente como una función de activación hasta fines de la década de 1990.
+La ecuación para tanh sigue:
+\begin{equation}
+f(z) = tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}
+\end{equation}
+La función tanh está centrada en cero, pero los gradientes aún se eliminan cuando las neuronas se saturan.
+Ahora sabemos que hay mejores opciones para las funciones de activación que las funciones sigmoide y tanh. Específicamente, la Unidad Lineal Rectificada (ReLU), definida como:
+\begin{equation}
+f(x) = max(0, x)
+\end{equation}
+Las ReLU también se denominan "funciones de rampa" debido a cómo se ven cuando se trazan. La función es cero para entradas negativas pero luego aumenta linealmente para positivas valores. La función ReLU no es saturable y también es extremadamente  eficiente computacionalmente.
+Empíricamente, la función de activación ReLU tiende a superar a las funciones sigmoide y tanh en casi todas las aplicaciones. Sin embargo, surge un problema cuando tenemos un valor de cero: no se puede tomar el gradiente.
+
+\subsection{Arquitecturas de redes \textit{feedforward}}
+
+Si bien hay muchas, muchas arquitecturas NN diferentes, la arquitectura más común es la red hacía adelante o \textit{feedforward}, como se presenta en la Figura \ref{fig:nnff}.
+
+\begin{figure}[H]
+	\begin{center}				
+	\includegraphics[width=0.65\textwidth]{022.png}
+  	\caption{Un ejemplo de una red neuronal \textit{feedforward}.}
+  	\label{fig:nnff}
+  	\end{center}
+\end{figure}
+
+En este tipo de arquitectura, solo se permite una conexión entre los nodos de los nodos en la capa $i$ a los nodos en la capa $i + 1$ (de ahí el término \textit{feedforward}). No hay conexiones hacia atrás o entre capas permitidas. Cuando las redes de retroalimentación incluyen conexiones de retroalimentación (conexiones de salida que retroalimentan las entradas) se denominan redes neuronales recurrentes.
+
+Para describir una red \textit{feedforward}, normalmente usamos una secuencia de enteros para depositar rápida y concisamente el número de nodos en cada capa. Por ejemplo, la red en la Figura 10.5 anterior es una red de alimentación directa 3-2-3-2:
+
+\begin{itemize}
+\item La capa 0 contiene 3 entradas, nuestros valores $x_i$. Estos podrían ser intensidades de píxeles sin procesar de una imagen o un vector de características extraído de la imagen.
+\item Las capas 1 y 2 son capas ocultas que contienen 2 y 3 nodos, respectivamente.
+\item La capa 3 es la capa de salida o la capa visible: allí es donde obtenemos la clasificación de salida general de nuestra red. La capa de salida generalmente tiene tantos nodos como etiquetas de clase; un nodo para cada salida potencial.
+\end{itemize}
+
+\subsection{Redes multicapa}
+Las redes multicapas, \textit{i.e.} con varias capas de neuronas pueden ser modeladas matemáticamente como se muestra a continuación.
+Supongamos $W$ como la matriz de pesos y el vector $b$ como el vector sesgo o \textit{bias}.
+Consideremos:
+\begin{equation}
+z(x)=Wx+b=\sum_{i=1}^{n}w_ix_i+b
+\end{equation}
+Además cabe mencionar que la multiplicación punto a punto entre dos matrices de igual dimensión es lo que se conoce como el producto Hadamard.
+\begin{equation}
+\sigma(z)=\frac{1}{1+e^{-z}}
+\end{equation}
+Por último definimos la salida de nuestro modelo como:
+\begin{equation}
+\hat{y}=\sigma(\sum_{i=1}^{n}w_ix_i+b)
+\end{equation}
+
+\subsection{Función pérdida}
+
+El objetivo del algoritmo de descenso de gradiente es minimizar la función de costo para que nuestro modelo neuronal pueda aprender.
+Pero antes debemos definir que es la función costo o pérdida \cite{sgd}.
+En el cálculo, los máximos (o mínimos) de cualquier función pueden ser descubiertos por:
+\begin{enumerate}
+\item Tomando la derivada de primer orden de la función e igualándola a 0. El punto encontrado de esta manera puede ser el punto de máximo o mínimo.
+\item Sustituimos estos valores (el punto que acabamos de encontrar) en la derivada de segundo orden de la función y si el valor es positivo, \textit{i.e.}$>0$, entonces ese punto ($s$) representa el punto ($s$) de mínimos locales o máximos locales.
+\end{enumerate}
+
+Necesitamos cerrar la brecha entre la salida del modelo y la salida real. Cuanto menor sea la brecha, mejor será nuestro modelo en sus predicciones y más confianza mostrará al predecir.
+
+La \textbf{función de pérdida o costo} esencialmente modela la diferencia entre la predicción de nuestro modelo y la salida real. Idealmente, si estos dos valores están muy separados, el valor de pérdida o el valor de error deberían ser mayores. Del mismo modo, si estos dos valores están más cerca, el valor del error debería ser bajo.
+Una posible función de pérdida podría ser:
+\begin{equation}
+J(\Theta)=\hat{y}-y / y\in\{0,1\}
+\end{equation}
+Pero, en lugar de tomar esta función como nuestra función de pérdida, terminamos considerando la siguiente función:
+\begin{equation}
+J(\Theta)=\frac{\|\hat{y}-y\|^2}{2}
+\end{equation}
+Esta función se conoce como error al cuadrado . Simplemente tomamos la diferencia entre la salida real $y$ y la salida predicha $\hat{y}$ elevamos al cuadrado ese valor (de ahí el nombre) y lo dividimos entre 2.
+
+Una de las principales razones para preferir el error al cuadrado en lugar del error absoluto es que el error al cuadrado es diferenciable en todas partes , mientras que el error absoluto no lo es (su derivada no está definida en 0).
+
+Además, los beneficios de la cuadratura incluyen:
+\begin{itemize}
+
+
+\item La cuadratura siempre da un valor positivo , por lo que la suma no será cero.
+\item Hablamos de suma aquí porque sumaremos los valores de pérdida o error para cada imagen en nuestro conjunto de datos de entrenamiento y luego haremos un promedio para encontrar la pérdida para todo el lote de ejemplos de entrenamiento.
+\item La cuadratura enfatiza las diferencias más grandes, una característica que resulta ser buena y mala.
+
+\end{itemize}
+
+La función de error que usaremos aquí se conoce como el error cuadrático medio y la fórmula es la siguiente:
+
+\begin{equation}
+J(\Theta)=\frac{1}{2m} \sum_{i=1}^{m} (\hat{y_i}-y_i)^2
+\label{funcperdida}
+\end{equation}
+
+Calculamos el error al cuadrado para cada \textit{feature} en nuestro \textit{dataset} y luego encontramos el promedio de estos valores y esto representa el error general del modelo en nuestro conjunto de entrenamiento.
+
+Consideremos el ejemplo de una sola \textit{feature} con solo 2 características de antes. Dos características significan que tenemos 2 valores de peso correspondientes y un valor de sesgo. En total, tenemos 3 parámetros para nuestro modelo.
+
+\begin{equation}
+\hat{y} = w_1x_1 + w_2x_2 + b
+\end{equation}
+
+\begin{equation}
+J(\Theta)=\frac{1}{2m} \sum_{i=1}^{m} (w_1x_1^{(i)}+w_2x_2^{(i)}+b-y^{(i)})^2
+\end{equation}
+
+Queremos encontrar valores para nuestros pesos y el sesgo que minimiza el valor de nuestra función de pérdida. Dado que esta es una ecuación de múltiples variables, eso significa que tendríamos que tratar con derivadas parciales de la función de pérdida correspondiente a cada una de nuestras variables $w_1$, $w_2$ y $b$.
+
+\begin{equation}
+\frac{\partial J}{\partial w_1} \frac{\partial J}{\partial w_2}
+\frac{\partial J}{\partial b}
+\end{equation}
+
+Esto puede parecer lo suficientemente simple porque solo tenemos 3 variables diferentes.
+Sin embargo tenemos tantos pesos como features \textit{i.e.} $w_n$ pesos.
+
+Hacer una optimización multivariante con tantas variables es computacionalmente ineficiente y no es manejable. Por lo tanto, recurrimos a alternativas y aproximaciones.
+
+\subsection{Descenso de gradiente}
+Este es el algoritmo que ayuda a nuestro modelo a aprender . Sin la capacidad de aprendizaje, cualquier modelo de aprendizaje automático es esencialmente tan bueno como un modelo de adivinanzas al azar.
+
+Es la capacidad de aprendizaje que otorga el algoritmo de descenso de gradiente lo que hace que el aprendizaje automático y los modelos de aprendizaje profundo funcionen.
+
+El objetivo de este algoritmo es minimizar el valor de nuestra función de pérdida y queremos hacer esto de manera eficiente.
+
+Como se discutió anteriormente, la forma más rápida sería encontrar derivadas de segundo orden de la función de pérdida con respecto a los parámetros del modelo. Pero, eso es computacionalmente costoso.
+
+La intuición básica detrás del descenso del gradiente puede ilustrarse mediante un escenario hipotético.
+
+Una persona está atrapada en las montañas y está tratando de bajar (es decir, tratando de encontrar los mínimos). Hay mucha niebla de tal manera que la visibilidad es extremadamente baja. Por lo tanto, el camino hacia abajo de la montaña no es visible, por lo que deben usar la información local para encontrar los mínimos.
+
+Pueden usar el método de descenso en gradiente, que consiste en mirar la inclinación de la colina en su posición actual, luego proceder en la dirección con el descenso más empinado (es decir, cuesta abajo).
+
+Si trataban de encontrar la cima de la montaña (es decir, los máximos), entonces avanzarían en la dirección con el ascenso más empinado (es decir, cuesta arriba). Usando este método, eventualmente encontrarían su camino.
+
+Sin embargo, suponga también que la pendiente de la colina no es inmediatamente obvia con una simple observación, sino que requiere un instrumento sofisticado para medir, que la persona tiene en ese momento.
+
+Se necesita bastante tiempo para medir la inclinación de la colina con el instrumento, por lo tanto, deben minimizar el uso del instrumento si quieren bajar la montaña antes del atardecer.
+
+La dificultad es elegir la frecuencia con la que deben medir la inclinación de la colina para no desviarse.
+
+En esta analogía:
+\begin{itemize}
+
+\item La persona representa nuestro \textbf{algoritmo de aprendizaje}, y
+el camino que baja por la montaña representa la \textbf{secuencia de actualizaciones de parámetros} que nuestro modelo eventualmente explorará.
+\item La inclinación de la colina representa la \textbf{pendiente de la superficie de error en ese punto}.
+\item El instrumento utilizado para medir la inclinación es la \textbf{diferenciación} (la pendiente de la superficie de error se puede calcular tomando la derivada de la función de error al cuadrado en ese punto). Esta es la aproximación que hacemos cuando aplicamos el descenso de gradiente. Realmente no sabemos el punto mínimo, pero sí sabemos la dirección que nos llevará a los mínimos (locales o globales) y damos un paso en esa dirección.
+\item La dirección en la que la persona elige viajar se alinea con el gradiente de la superficie de error en ese punto.
+\item La cantidad de tiempo que viajan antes de tomar otra medida es la \textbf{velocidad de aprendizaje del algoritmo}. Esto es esencialmente lo importante que nuestro modelo (o la persona que va cuesta abajo) decide dar cada vez.
+
+\end{itemize}
+
+La Figura \ref{fig:gd} es una de las más comunes asociadas con el descenso de gradiente y muestra que nuestra función de error es una función convexa suave. También muestra que el algoritmo de descenso de gradiente encuentra el mínimo global.
+
+\begin{figure}[H]
+	\begin{center}				
+	\includegraphics[width=0.65\textwidth]{023.png}
+  	\caption{Representación gráfica del descenso de gradiente.}
+  	\label{fig:gd}
+  	\end{center}
+\end{figure}
+
+Por tanto para actualizar la matriz de pesos y de sesgo serán utilizadas las siguientes ecuaciones.
+
+\begin{equation}
+W' = W - \alpha \frac{\partial J}{\partial W}
+\end{equation}
+
+\begin{equation}
+b' = b - \alpha \frac{\partial J}{\partial b}
+\end{equation}
+
+El $\alpha$ representa la tasa de aprendizaje o  \textit{learning rate} para nuestro algoritmo de pendiente de descenso, \textit{i.e.}  el tamaño de paso para ir cuesta abajo.
+
+\subsection{Backpropagation}
+
+Ya sabemos cómo fluyen las activaciones en la dirección hacia adelante. Tomamos las \textit{features} de entrada, las transformamos linealmente, aplicamos la activación sigmoidea en el valor resultante y finalmente tenemos nuestra activación que luego usamos para hacer una predicción.
+
+Lo que veremos en esta sección es el flujo de gradientes a lo largo de la línea roja en la Figura \ref{fig:back} mediante un proceso conocido como retropropagación o \textit{backpropagation}, que es esencialmente la regla de la cadena de cálculo aplicada a los gráficos computacionales.
+
+\begin{figure}[H]
+	\begin{center}				
+	\includegraphics[width=0.65\textwidth]{024.png}
+  	\caption{Las activaciones se propagan hacía adelante, pero los gradientes fluyen hacía atrás.}
+  	\label{fig:back}
+  	\end{center}
+\end{figure}
+
+Digamos que queríamos encontrar la derivada parcial de la variable $y$ con respecto a $x$ de la Figura \ref{fig:func}. No podemos descubrirlo directamente porque hay otras 3 variables involucradas en el gráfico computacional. Entonces, hacemos este proceso iterativamente yendo hacia atrás en el gráfico de cálculo.
+
+Primero descubrimos la derivada parcial de la salida $y$ con respecto a la variable $C$. Luego usamos la regla de la cadena de cálculo y determinamos la derivada parcial con respecto a la variable $B$ y así sucesivamente hasta que obtengamos la derivada parcial que estamos buscando.
+
+\begin{figure}[H]
+	\begin{center}				
+	\includegraphics[width=0.65\textwidth]{025.png}
+  	\caption{Representación de grafo simple.}
+  	\label{fig:func}
+  	\end{center}
+\end{figure}
+
+Utilizando la función pérdida definida en la ecuación \ref{funcperdida} y reescribiéndola en su forma vectorial.
+
+\begin{equation}
+J(\Theta)=\frac{1}{2} \|\hat{Y}-Y\|^2
+\end{equation}
+
+La derivada parcial de la función de pérdida con respecto a la activación de nuestro modelo es:
+
+\begin{equation}
+\frac{\partial J}{\partial \hat{Y}}
+=\frac{1}{2} \frac{\partial J}{\partial \hat{Y}} \|\hat{Y}-Y\|^2 = \frac{1}{2} 2 \hat{Y} - Y \frac{\partial}{\partial \hat{Y}} (\hat{Y}-Y) = (\hat{Y}-Y) \frac{\partial}{\partial \hat{Y}} \|\hat{Y}-Y\| = (\hat{Y} - Y)
+\label{dj/dy}
+\end{equation}
+
+Avancemos un paso hacia atrás y calculemos nuestra próxima derivada parcial. Esto nos llevará un paso más cerca de los gradientes reales que queremos calcular.
+
+Este es el punto donde aplicamos la regla de la cadena que mencionamos antes. Entonces, para calcular la derivada parcial de la función de pérdida con respecto a la salida transformada lineal, es decir, la salida de nuestro modelo antes de aplicar la activación sigmoidea:
+
+\begin{equation}
+\frac{\partial J}{\partial D} = \frac{\partial J}{\partial \hat{Y}} \frac{\partial \hat{Y}}{\partial A}
+\label{dJdD}
+\end{equation}
+
+La primera parte de esta ecuación es el valor que habíamos calculado en la ecuación \ref{dj/dy}. Lo esencial para calcular aquí es la derivada parcial de la predicción de nuestro modelo con respecto a la salida transformada linealmente.
+
+Veamos la ecuación para la predicción de nuestro modelo, la función de activación sigmoidea.
+
+\begin{equation}
+\hat{Y} = \sigma(A) = \frac{1}{1+e^{-A}}
+\end{equation}
+
+Derivada de la salida final de nuestro modelo, \textit{i.e.} significa la derivada parcial de la función sigmoide con respecto a su entrada.
+
+\begin{equation}
+\frac{\partial}{\partial A} \sigma (A) = \frac{\partial}{\partial A} \frac{1}{1+e^{-A}} = \frac{\partial}{\partial A} (1+e^{-A})^{-1}
+\end{equation}
+
+\begin{equation}
+ -1  (1+e^{-A})^{-2} \frac{\partial}{\partial A} (1+e^{-A}) = -1  (1+e^{-A})^{-2} (-e^{-A}) = \frac{e^{-A}}{(1+e^{-A})^2}
+\end{equation}
+
+Continuando, podemos simplificar aún más esta ecuación.
+
+\begin{equation}
+\sigma(A) = \frac{1}{1+e^{-A}}
+\end{equation}
+
+\begin{equation}
+e^{-A} = \frac{1}{\sigma (A)} - 1 = \frac{1-\sigma (A)}{\sigma(A)}
+\end{equation}
+
+Substituyendo este valor en la ecuación \ref{dJdD} obtenemos:
+
+\begin{equation}
+\frac{\partial J}{\partial A} = \frac{\partial J}{\partial \hat{Y}} \frac{e^{-A}}{(1+e^{-A})^2}
+\end{equation}
+
+\begin{equation}
+\frac{\partial J}{\partial A} = \frac{\partial J} {\partial \hat{Y} } \frac{1-\sigma(A)}{\sigma(A)} \sigma (A) \sigma (A)
+\end{equation}
+
+\begin{equation}
+\frac{\partial J}{\partial A} = \frac{\partial J} {\partial \hat{Y}} \sigma(A) (1-\sigma(A))
+\end{equation}
+
+Necesitamos la derivada parcial de la función de pérdida correspondiente a cada uno de los pesos. Pero como estamos recurriendo a la vectorización, podemos encontrarlo todo de una vez. Es por eso que hemos estado usando la notación mayúscula $W$ en vez de $w_1, w_2, \ldots, w_n$.
+
+\begin{equation}
+\frac{\partial J}{\partial W} = \frac{\partial J}{\partial A} \frac{\partial A}{\partial W}
+\label{dJ/dW}
+\end{equation}
+
+\begin{equation}
+\frac{\partial J}{\partial b} = \frac{\partial J}{\partial A} \frac{\partial A}{\partial b}
+\label{dJ/db}
+\end{equation}
+
+La derivación de los pesos queda partiendo de la ecuación \ref{dJ/dW}:
+
+\begin{equation}
+\frac{\partial J}{\partial W} = \frac{\partial J}{\partial A} \frac{\partial}{\partial W}(W^T X + b) = \frac{\partial J}{\partial A} X
+\end{equation}
+
+Y de la ecuación \ref{dJ/db}:
+
+\begin{equation}
+\frac{\partial J}{\partial b} = \frac{\partial J}{\partial A} \frac{\partial}{\partial b}((W^T X + b) = \frac{\partial J}{\partial A} 1 = \frac{\partial J}{\partial A}
+\end{equation}
+
+Se demostró desde un punto de vista matemático el concepto de \textit{backpropagation} como se realiza la actualización de los pesos y sesgos utilizando el descenso por gradiente.
+
+\subsection{Descenso de gradiente estocástico (SGD)}
+Sin embargo el descenso de gradiente puede ser excepcionalmente lento en datasets muy grandes debido a que en cada iteración requiere calcular una predicción por cada punto de entrenamiento en nuestros datos de entrenamientos antes que actualizaciones nuestra matriz de pesos.
+
+En cambio lo que se utiliza es una variante de éste, el descenso de gradiente estocástico o \textit{Stochastic Gradient Descent (SGD)}.
+El SGD es una simple modificación del algoritmo de descenso de gradiente estándar que computa el gradiente y actualiza la matriz de pesos $W$ en pequeños lotes o \textit{batches} de datos de entrenamiento, en vez del \textit{dataset} entero. Mientras esta modificación nos lleva a actualizaciones más " ruidosas", también nos permite tomar más pasos a lo largo del gradiente, llevando en ultima instancia a una convergencia más rápida y sin afectar negativamente a la pérdida y precisión del modelo.
+
+En lugar de calcular nuestro gradiente en todo el conjunto de datos, en su lugar muestreamos nuestros datos, produciendo un lote. Evaluamos el gradiente en el lote y actualizamos nuestra matriz de peso W. Desde una perspectiva de implementación, también tratamos de aleatorizar nuestras muestras de entrenamiento antes de aplicar SGD ya que el algoritmo es sensible a los lotes.
+
+En una implementación "purista" de SGD, el tamaño de su mini lote sería 1,
+lo que implica que muestrearíamos aleatoriamente un punto de datos del conjunto de entrenamiento, calcularíamos el gradiente, En una implementación "purista" de SGD, el tamaño de su mini lote sería 1, lo que implica que muestrearíamos aleatoriamente un punto de datos del conjunto de entrenamiento, calcularíamos el gradiente,
+y actualiza nuestros parámetros.
+
+Sin embargo, a menudo utilizamos mini lotes que son> 1. Los tamaños de lote típicos incluyen 32, 64, 128 y 256.
+
+¿Por qué usar lotes de tamaños > 1? 
+\begin{enumerate}
+\item Ayudan a reducir la variación en la actualización de parámetros, lo que conduce a una convergencia más estable. 
+\item Las potencias de dos a menudo son deseables para los tamaños de lote, ya que permiten que las bibliotecas de optimización de álgebra lineal interna sean más eficientes.
+\end{enumerate}
+En general, el tamaño del mini lote no es un hiperparámetro por el que debería preocuparse demasiado. Si está usando una GPU para entrenar su red neuronal, usted determina cuántos ejemplos de entrenamiento encajarán en su GPU y luego usa la potencia más cercana de dos, ya que el tamaño del lote se ajustará en la GPU. Para el entrenamiento de CPU, normalmente utiliza uno de los tamaños de lote enumerados anteriormente para asegurarse de cosechar los beneficios de las bibliotecas de optimización de álgebra lineal.
+
+\subsection{Sobreajuste y bajo-ajuste}
+El sobreajuste o \textit{overfitting} y la falta de ajuste o \textit{underfitting} \cite{quora} es muy importante para saber si el modelo predictivo está generalizando bien los datos o no. Un buen modelo debe poder generalizar bien los datos.
+
+\begin{figure}[H]
+	\begin{center}				
+	\includegraphics[width=0.65\textwidth]{026.png}
+  	\caption{Distintas representaciones del ajuste en un mismo modelo.}
+  	\label{fig:fitting}
+  	\end{center}
+\end{figure}
+
+En la Figura \ref{fig:fitting} \textbf{Izquierda} el modelo está sobreajustado, \textit{i.e.} cuando funciona bien en el ejemplo de entrenamiento pero no funciona bien en datos no vistos. A menudo es el resultado de un modelo excesivamente complejo y ocurre porque el modelo está memorizando la relación entre el ejemplo de entrada (a menudo llamado $X$) y la variable objetivo (a menudo llamada $y$) o, por lo tanto, no puede generalizar bien los datos. El modelo de sobreajuste predice el objetivo en el conjunto de datos de entrenamiento con mucha precisión.
+
+En cambio en la Figura \ref{fig:fitting} \textbf{Derecha} se dice que el modelo predictivo tiene bajo-ajuste, si funciona mal en los datos de entrenamiento. Esto sucede porque el modelo no puede capturar la relación entre el ejemplo de entrada y la variable objetivo. Podría deberse a que el modelo es demasiado simple, es decir, las características de entrada no son lo suficientemente expresivas como para describir bien la variable objetivo. El modelo con bajo-ajuste no predice los objetivos en los conjuntos de datos de entrenamiento con mucha precisión.
+
+Un buen modelo debe ser como el de la Figura \ref{fig:fitting} \textbf{Medio} que posee una buena precisión en su conjunto de datos de entrenamiento pero a su vez también tiene una buena \textit{performance} con datos que no haya visto.
+
+\subsection{Regularización}
+Para disminuir los efectos del sobreajuste se utiliza la \textbf{regularización} que después de la tasa de aprendizaje, es el parámetro más importante de su modelo que puede ajustar.
+
+Existen varios tipos de técnicas de regularización, como la regularización L1, la regularización L2 (comúnmente llamada “pérdida de peso”) y Elastic Net, que se utilizan al actualizar la función de pérdida en sí, agregando un parámetro adicional para restringir la capacidad de el modelo.
+
+La regularización nos ayuda a controlar la capacidad de nuestro modelo, asegurando que nuestros modelos sean mejores para hacer clasificaciones (correctas) en los puntos de datos en los que no fueron entrenados, lo que llamamos la capacidad de generalizar. Si no aplicamos la regularización, nuestros clasificadores pueden volverse demasiado complejos y ajustarse fácilmente a nuestros datos de entrenamiento, en cuyo caso perdemos la capacidad de generalizar a nuestros datos de prueba.
+
+\subsection{Los cuatro ingredientes de una red neuronal}
+Hay cuatro ingredientes principales que necesita para armar su propia red neuronal y algoritmo de aprendizaje profundo: un conjunto de datos, un modelo/arquitectura, una función de pérdida y una optimización.
+\subsubsection{Conjunto de datos}
+También llamado \textit{dataset}, es el primer ingrediente en el entrenamiento de una red neuronal: los datos en sí mismos junto con el problema que estamos tratando de resolver definen nuestros objetivos finales.
+
+La combinación de su conjunto de datos y el problema que está tratando de resolver influye en su elección en la función de pérdida, la arquitectura de red y el método de optimización utilizado para entrenar el modelo. Por lo general, tenemos pocas opciones en nuestro conjunto de datos (a menos que esté trabajando en un proyecto de pasatiempo): se nos da un conjunto de datos con cierta expectativa sobre cuáles deberían ser los resultados de nuestro proyecto. Depende de nosotros entrenar un modelo de aprendizaje automático en el conjunto de datos para que funcione bien en la tarea dada.
+
+\subsubsection{Función de pérdida}
+Dado nuestro conjunto de datos y objetivo objetivo, necesitamos definir una función de pérdida que se alinee con el problema que estamos tratando de resolver.
+
+\subsubsection{Modelo/Arquitectura}
+La arquitectura de su red puede considerarse la primera "elección" real que tiene que hacer como ingrediente. Es probable que su conjunto de datos sea elegido para usted (o al menos ha decidido que desea trabajar con un conjunto de datos determinado). Y si está realizando una clasificación, probablemente utilizará la entropía cruzada como su función de pérdida.
+Sin embargo, su arquitectura de red puede variar dramáticamente, especialmente cuando con qué método de optimización elige entrenar su red.
+
+\subsubsection{Método de optimización}
+El ingrediente final es definir un método de optimización. El SGD se usa con bastante frecuencia.
+SGD sigue siendo el caballo de batalla del aprendizaje profundo: la mayoría de las redes neuronales se entrenan a través de SGD, aunque existen otros métodos de optimización como Adam.
+Luego debe establecer una tasa de aprendizaje adecuada, la fuerza de regularización y el número total de épocas para las que se debe entrenar la red.
+
+\section{Redes neuronales convolucionales}
+En las redes neuronales \textit{feedforward} tradicionales, cada neurona en la capa de entrada está conectada a cada neurona de salida en la siguiente capa; a esto le llamamos una capa completamente conectada (FC). Sin embargo, en las CNN, no utilizamos capas FC hasta las últimas capas de la red. De este modo, podemos definir una CNN como una red neuronal que se intercambia en una capa especializada "convolucional" en lugar de una capa "completamente conectada" para al menos una de las capas de la red.
+
+Luego se aplica una función de activación no lineal, como ReLU, a la salida de estas convoluciones y el proceso de convolución => la activación continúa (junto con una mezcla de otros tipos de capas para ayudar a reducir el ancho y la altura del volumen de entrada y ayudar a reducir sobreajuste) hasta que finalmente lleguemos al final de la red y apliquemos una o dos capas FC donde podamos obtener nuestras clasificaciones finales de salida.
+
+Cada capa en una CNN aplica un conjunto diferente de filtros, típicamente cientos o miles de ellos, y combina los resultados, alimentando la salida a la siguiente capa en la red. Durante el entrenamiento, una CNN aprende automáticamente los valores de estos filtros.
+
+La última capa en una CNN usa estas características de nivel superior para hacer predicciones sobre el contenido de la imagen. En la práctica, las CNN nos brindan dos beneficios clave: invariancia local y composicionalidad. 
+\begin{enumerate}
+
+\item El concepto de invariancia local nos permite clasificar una imagen como que contiene un objeto en particular, independientemente de en qué parte de la imagen aparezca el objeto. Obtenemos esta invariancia local mediante el uso de "capas de agrupación" que identifica regiones de nuestro volumen de entrada con una alta respuesta a un filtro particular.
+
+\item Composicionalidad. Cada filtro compone un parche local de \textit{features} de nivel inferior en una representación de nivel superior, similar a cómo podemos componer un conjunto de funciones matemáticas que se basan en la salida de funciones anteriores: $f (g (x (h (x)))$ - esta composición permite que nuestra red aprenda \textit{features} más ricas más profundamente en la red. El concepto de crear \textit{features} de nivel superior a partir de las de nivel inferior es exactamente la razón por la cual las CNN son tan poderosas en visión por computadora.
+
+\end{enumerate}
+%1
+%f (net) =
+%0
+%if net > 0
+%otherwise
+%As we can see from the equation above, this is a very simple threshold function. If the weighted
+%sum ∑ ni=1 w i x i > 0, we output 1, otherwise, we output 0.
+%Plotting input values along the x-axis and the output of f (net) along the y − axis we can see
+%why this activation function received its name (Figure 10.4, top-left). The output of f is always
+%zero when net is less than or equal zero. If net is greater than to zero, then f will return one. Thus,
+%this function looks like a stair step, not dissimilar to the stairs you walk up and down every day.
+
+%\subsection{Neuronas}
+%Los cerebros de los animales desconcertaron a los científicos, porque incluso los más pequeños, como un cerebro de paloma, eran mucho más capaces que las computadoras digitales con una gran cantidad de elementos de computación electrónica, un gran espacio de almacenamiento y todo funcionaba a frecuencias mucho más rápidas que los cerebros naturales. 
+%
+%La atención se dirigió a las diferencias arquitectónicas. Las computadoras tradicionales procesaron los datos de manera muy secuencial y en términos concretos bastante exactos. No hay confusión ni ambigüedad sobre sus cálculos. Los cerebros animales, por otro lado, aunque aparentemente corren a ritmos mucho más lentos, parecían procesar señales en paralelo, y la ambigüedad era una característica de su cálculo.
+%
+%\begin{figure}[H]
+%	\begin{center}				
+%	\includegraphics[width=0.6\textwidth]{pic_004.png}
+%  	\caption{Representación de una neurona.}
+%  	\end{center}
+%\end{figure}
+%
+%Las neuronas, aunque existen varias formas de ellas, todas transmiten una señal eléctrica de un extremo al otro, desde las dendritas a lo largo de los axones hasta los terminales. Estas señales se pasan de una neurona a otra. Así es como su cuerpo siente la luz, el sonido, la presión táctil, el calor, etc. Las señales de las neuronas sensoriales especializadas se transmiten a lo largo de su sistema nervioso a su cerebro, que también está compuesto principalmente de neuronas.
+%
+%El funcionamiento completo de los cerebros, la conciencia, por ejemplo, sigue siendo un misterio, pero se sabe lo suficiente sobre las neuronas como para sugerir diferentes formas de hacer cálculos, es decir, diferentes formas de resolver problemas.
+%Así que veamos cómo funciona una neurona. Toma una entrada eléctrica y genera otra señal eléctrica. 
+%
+%Las observaciones sugieren que las neuronas no reaccionan fácilmente, sino que suprimen la entrada hasta que ha crecido tanto que desencadena una salida. Puede pensar en esto como un $umbral$ que debe alcanzarse antes de producir cualquier salida. Es como el agua en una taza: el agua no se derrama hasta que la llena por primera vez. Intuitivamente, esto tiene sentido: las neuronas no quieren transmitir pequeñas señales de ruido, solo señales intencionales enfáticamente fuertes. Lo siguiente ilustra esta idea de producir solo una señal de salida si la entrada está suficientemente marcada para pasar un umbral.
+%
+%\begin{figure}[H]
+%	\begin{center}				
+%	\includegraphics[width=0.6\textwidth]{pic_005.png}
+%  	\caption{Representación del funcionamiento de una neurona elemental.}
+%  	\end{center}
+%\end{figure}
+%
+%Una función que toma la señal de entrada y genera una señal de salida, pero tiene en cuenta algún tipo de umbral se llama \textit{función de activación}. Matemáticamente, hay muchas funciones de activación que podrían lograr este efecto. Una función escalón podría hacer esto:
+%
+%\begin{figure}[H]
+%	\begin{center}				
+%	\includegraphics[width=0.6\textwidth]{pic_006.png}
+%  	\caption{Función escalón.}
+%  	\end{center}
+%\end{figure}
+%
+%Puede ver que a valores bajos de entrada, la salida es cero. Sin embargo, una vez que se alcanza el umbral de entrada, la salida aumenta. Una neurona artificial que se comporta así sería como una neurona biológica real. El término utilizado por los científicos en realidad describe esto bien, dicen que las neuronas se disparan cuando la entrada alcanza el umbral.
+%Podemos mejorar la función de paso. La función en forma de S que se muestra a continuación se llama \textit{función sigmoidea}. Es más suave que la función escalón, y esto lo hace más natural y realista.
+%
+%\begin{figure}[H]
+%	\begin{center}				
+%	\includegraphics[width=0.6\textwidth]{pic_007.png}
+%  	\caption{Función sigmoidea.}
+%  	\end{center}
+%\end{figure}
+%
+%\begin{equation*}
+%	y = \frac{1}{1+e^{-x}}
+%\end{equation*}
+%
+%Volvamos a las neuronas y consideremos cómo podríamos modelar una neurona artificial. Lo primero que debe darse cuenta es que las neuronas biológicas reales toman muchas entradas, no solo una.
+%Entonces simplemente las combinamos sumándolas, y la suma resultante es la entrada a la función sigmoide que controla la salida. Esto refleja cómo funcionan las neuronas reales. 
+%
+%\begin{figure}[H]
+%	\begin{center}				
+%	\includegraphics[width=0.8\textwidth]{pic_008.png}
+%  	\caption{Aplicación de umbral a la suma combinada.}
+%  	\end{center}
+%\end{figure}
+%
+%Si la señal combinada no es lo suficientemente grande, entonces el efecto de la función de umbral sigmoide es suprimir la señal de salida. Si la suma $x$ es lo suficientemente grande, el efecto del sigmoide es disparar la neurona. Curiosamente, si solo una de las varias entradas es grande y el resto pequeño, esto puede ser suficiente para disparar la neurona. Además, la neurona puede dispararse si algunas de las entradas son individualmente casi, pero no del todo, lo suficientemente grandes porque cuando se combinan, la señal es lo suficientemente grande como para superar el umbral. De manera intuitiva, esto le da una idea de los cálculos más sofisticados y, en cierto sentido, difusos, que pueden hacer esas neuronas.
+%
+%\subsection{Redes neuronales}
+%
+%Una forma de replicar esto de la naturaleza a un modelo artificial es tener capas de neuronas, cada una conectada entre sí en la capa anterior y posterior.
+%Puede ver las tres capas, cada una con tres neuronas artificiales o nodos. También puede ver cada nodo conectado a cualquier otro nodo en las capas anteriores y siguientes.
+%
+%\begin{figure}[H]
+%	\begin{center}				
+%	\includegraphics[width=0.8\textwidth]{pic_009.png}
+%  	\caption{Capas de neuronas conectadas.}
+%  	\end{center}
+%\end{figure}
+%
+%El siguiente diagrama muestra nuevamente los nodos conectados, pero esta vez se muestra un $peso$ asociado con cada conexión. Un $peso$ bajo desestimará una señal y un $peso$ alto la amplificará.
+%
+%\begin{figure}[H]
+%	\begin{center}				
+%	\includegraphics[width=0.8\textwidth]{pic_010.png}
+%  	\caption{Pesos correspondiente a cada neurona.}
+%  	\end{center}
+%\end{figure}
+%
+%Ahora que ya tenemos un esquema definido podemos discernir que operaciones realiza la red neuronal.
+%En primer lugar toma los $inputs$ y las multiplica por los $weights$ de sus respectivas neuronas, luego realiza la sumatoria y aplica la función sigmoidea para decidir si se dispara o no, si $output > threshold$.
+%
+%\begin{figure}[H]
+%	\begin{center}				
+%	\includegraphics[width=0.8\textwidth]{pic_011.png}
+%  	\caption{Operaciones realizadas por cada neurona.}
+%  	\end{center}
+%\end{figure}
+%
+%Pero estas operaciones se realizan de manera más eficiente, ordenada y sistematizada aplicando matrices como se muestra a continuación.
+%
+%\begin{center}
+%
+%$\begin{pmatrix}
+%w_{1,1} & w_{2,1}\\
+%w_{1,2} & w_{2,2}
+%\end{pmatrix}$
+%$\begin{pmatrix}
+%i_1\\
+%i_2
+%\end{pmatrix}$
+%=
+%$\begin{pmatrix}
+%i_1 \cdot w_{1,1}+i_2 \cdot w_{2,1}\\
+%i_1 \cdot w_{1,2}+i_2 \cdot w_{2,2}
+%\end{pmatrix}$
+%
+%\end{center}
+%
+%Además esta operación de matrices puede ser representada por:
+%
+%\begin{equation*}
+%	X = W \cdot I
+%\end{equation*}
+%
+%Y así la operación sigmoidea debería ser aplicada a cada miembro de la matriz, obteniendo las $outputs$:
+%
+%\begin{equation*}
+%	O=sigmoid(X)
+%\end{equation*}
+%
+%\subsubsection{Aprendiendo pesos de más de un nodo}
+%Es simple de ver el caso en que tenemos que actualizar los $weights$ en un único nodo a través del $error$, pero es una incógnita como se realiza este procedimiento cuando tenemos múltiples nodos.
+%
+%\begin{figure}[H]
+%	\begin{center}				
+%	\includegraphics[width=0.8\textwidth]{pic_012.png}
+%  	\caption{Representación del problema.}
+%  	\end{center}
+%\end{figure}
+%
+%No tiene sentido usar todo el $e$ para actualizar solo un $w$, porque eso ignora el otro enlace y su $w$. Ese $e$ estaba allí porque más de un enlace contribuyó a ello.
+%Existe una pequeña posibilidad de que solo un enlace de muchos haya sido responsable del $e$, pero esa posibilidad es extremadamente minúscula.
+%Una idea es dividir el error por igual entre todos los nodos  contribuyentes, como se muestra a continuación.
+%
+%\begin{figure}[H]
+%	\begin{center}				
+%	\includegraphics[width=0.8\textwidth]{pic_013.png}
+%  	\caption{Solución utilizando errores ponderados equitativamente entre los nodos.}
+%  	\end{center}
+%\end{figure}
+%
+%Otra idea es dividir el error pero no hacerlo por igual. En cambio, damos más del error a las conexiones contribuyentes que tenían mayores pesos de enlace porque contribuyeron más al error.
+%
+%\begin{figure}[H]
+%	\begin{center}				
+%	\includegraphics[width=0.8\textwidth]{pic_014.png}
+%  	\caption{Solución utilizando errores ponderados por peso entre los nodos.}
+%  	\end{center}
+%\end{figure}
+%
+%Podemos extender esta misma idea a muchos más nodos. Si tuviéramos 100 nodos conectados a un nodo de salida, dividiríamos el error entre las 100 conexiones a ese nodo de salida en proporción a la contribución de cada enlace al error, indicado por el tamaño del peso del enlace.
+%
+%Puede ver que estamos usando los pesos para dos propósitos.
+%\begin{enumerate}
+%  \item Propagar las señales hacia adelante desde la entrada a las capas de salida en una red neuronal.
+%  \item Propagar el error hacia atrás desde la salida a la red. Esto se llama \textit{backpropagation}, o propagación hacía atrás.
+%\end{enumerate}
+%
+%En primer lugar, 
+%En segundo lugar, usamos los pesos 
+%Si la capa de salida tuviera 2 nodos, haríamos lo mismo para el segundo nodo de salida. 
+%Ese segundo nodo de salida tendrá su propio error, que se divide de manera similar entre los enlaces de conexión.
+%
+%Consideremos el siguiente ejemplo, una simple red con 2 nodos de entrada y 2 nodos de salida.
+%Ambos nodos de salida pueden tener un error; de hecho, es extremadamente probable cuando no hemos entrenado la red. Puede ver que estos dos errores deben informar el refinamiento de los pesos de los enlaces internos en la red.
+%
+%El hecho de que tengamos más de un nodo de salida realmente no cambia nada. Simplemente repetimos para el segundo nodo de salida lo que ya hicimos para el primero. Es simple porque los enlaces a un nodo de salida no dependen de los enlaces a otro nodo de salida. No hay dependencia entre estos dos conjuntos de enlaces.
+%
+%\begin{figure}[H]
+%	\begin{center}				
+%	\includegraphics[width=0.8\textwidth]{pic_015.png}
+%  	\caption{Representación de la red.}
+%  	\end{center}
+%\end{figure}
+%
+%El error de la primer red lo etiquetamos como $e_1$, y es igual a la diferencia entre la salida deseada propuesta por el dato de entrenamiento $t_1$ y la actual salida $o_1 \Rightarrow e_1 = (t_1-o_1)$. El error de $o_2$ es $e_2$.
+%
+%Puede ver en el diagrama que el error $e_1$ se divide en proporción a los enlaces conectados, que tienen pesos $w_{1,1}$ y $w_{2,1}$. Del mismo modo, $e_2$ se dividiría en proporción a los pesos $w_{2,1}$ y $w_{2,2}$.
+%
+%Vamos a escribir cuáles son estas divisiones, para que no tengamos ninguna duda. El error $e_1$ se usa para informar el refinamiento de ambos pesos $w_{1,1}$ y $w_{2,1}$. 
+%Entonces
+%
+%\begin{equation*}
+%	w'_{1,1}=e_1 \cdot \frac{w_{1,1}}{w_{1,1}+w_{2,1}}
+%\end{equation*}
+%
+%\begin{equation*}
+%	w'_{2,1}=e_1 \cdot \frac{w_{2,1}}{w_{1,1}+w_{2,1}}
+%\end{equation*}
+%
+%La idea simplemente es que el error $e_1$ se divide para dar más al peso que es más grande y menos al peso que es más pequeño.
+%
+%Ahora procedemos a aumentar la complejidad a 3 capas: una capa de entrada, una capa oculta y una capa final de salida.
+%
+%
+%\begin{figure}[H]
+%	\begin{center}				
+%	\includegraphics[width=0.8\textwidth]{pic_016.png}
+%  	\caption{Representación de la red.}
+%  	\end{center}
+%\end{figure}
+%
+%Al retroceder desde la capa de salida final en el lado derecho, podemos ver que usamos los errores en esa capa de salida para guiar el refinamiento de los pesos de enlace que se introducen en la capa final.
+%
+%Hemos etiquetado los errores de salida de forma más genérica como $e_{output}$ y los pesos de los enlaces entre la capa oculta y de salida como $w_{ho}$. Resolvimos los errores específicos asociados con cada enlace dividiendo los pesos en proporción al tamaño de los mismos pesos.
+%
+%Al mostrar esto visualmente, podemos ver lo que debemos hacer para la nueva capa adicional. Simplemente tomamos esos errores asociados con la salida de los nodos de capa ocultos $e_{hidden}$, y los dividimos nuevamente proporcionalmente entre los enlaces anteriores entre la entrada y las capas ocultas $w_{ih}$. El siguiente diagrama muestra esta lógica.
+%
+%\begin{figure}[H]
+%	\begin{center}				
+%	\includegraphics[width=0.8\textwidth]{pic_017.png}
+%  	\caption{Diagrama.}
+%  	\end{center}
+%\end{figure}
+%
+%Si tuviéramos incluso más capas, aplicaríamos repetidamente esta misma idea a cada capa que trabaje hacia atrás desde la capa de salida final. 
+%
+%Si primero utilizamos el $e_{output}$ de los nodos de la capa de salida e salida, ¿qué error usamos para los nodos de la capa oculta $e_{hidden}$? 
+%
+%Esta es una buena pregunta que hacer porque un nodo en la capa oculta del medio no tiene un error obvio. Sabemos por alimentar las señales de entrada que, sí, cada nodo en la capa oculta tiene una sola salida. Recordará que esa fue la función de activación aplicada a la suma ponderada en las entradas a ese nodo.
+%
+%No tenemos las salidas deseadas para los nodos ocultos. Solo tenemos los valores objetivo para los nodos de la capa de salida final, y estos provienen de los ejemplos de entrenamiento.
+% primer nodo en la capa oculta tiene dos enlaces.
+%saliendo de él para conectarlo a los dos nodos de la capa de salida. Sabemos que podemos dividir el error de salida en cada uno de estos enlaces, tal como lo hicimos antes. Eso significa que tenemos algún tipo de error para cada uno de los dos enlaces que emergen de este nodo de capa intermedia. Podríamos recombinar estos dos errores de enlace para formar el error para este nodo como un segundo mejor enfoque porque en realidad no tenemos un valor objetivo para el nodo de la capa intermedia. Lo siguiente muestra esta idea visualmente.
+
+%Una computadora toma una \textit{input}, realiza algún calculo sobre éste y se obtiene una \textit{output}. 
+%\begin{figure}[h!]
+%	\begin{center}				
+%	\includegraphics[width=0.8\textwidth]{pic_001.png}
+%  	\caption{Representación de una función.}
+%  	\end{center}
+%\end{figure}
+%
+%Esto quizás pueda parecer muy trivial, pero aumentemos la complejidad intentando resolver el siguiente problema. Necesitamos obtener la relación (lineal) que existe en la fórmula: $kilometros \cdot c = millas$.
+%
+%\begin{figure}[h!]
+%	\begin{center}				
+%	\includegraphics[width=0.8\textwidth]{pic_002.png}
+%  	\caption{Representación del problema.}
+%  	\end{center}
+%\end{figure}
+%
+%Para ello nos valdremos de un dataset de datos reales, e intentaremos a través de nuestra función obtener el valor de $c$.
+%
+%\begin{table}[htbp]
+%\begin{center}
+%\begin{tabular}{|c|c|c|}
+%\hline
+%Ejemplo & Kilómetros & Millas \\ \hline
+%1 & 0 & 0 \\ \hline
+%2 & 100 & 62,137 \\ \hline
+%\end{tabular}
+%\end{center}
+%\caption{Datos reales.}
+%\label{}
+%\end{table}
+%
+%Seleccionamos un valor al azar para $c$ y calcularemos el error.
+%Si elegimos $c=0.5 \Rightarrow m = c \cdot km = 50$.
+%
+%\begin{figure}[h!]
+%	\begin{center}				
+%	\includegraphics[width=0.8\textwidth]{pic_003.png}
+%  	\caption{Cálculo con valor al azar.}
+%  	\end{center}
+%\end{figure}
+%
+%Entonces $error = valor_{verdadero} - valor_{calculado} = 62.137-50 = 12.137$.
+
+
+\clearpage
+%\bibliographystyle{ieeetr}
+\bibliographystyle{unsrtnat}
+\bibliography{mybib}
+
+\end{document}

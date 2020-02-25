@@ -1,0 +1,480 @@
+Cantidad de hilos: 1
+Inicio de convolucion
+51.950484
+pasada n°1
+Cantidad de hilos: 1
+Inicio de convolucion
+50.525452
+pasada n°2
+Cantidad de hilos: 1
+Inicio de convolucion
+50.112833
+pasada n°3
+Cantidad de hilos: 1
+Inicio de convolucion
+50.099228
+pasada n°4
+Cantidad de hilos: 1
+Inicio de convolucion
+50.157055
+pasada n°5
+Cantidad de hilos: 1
+Inicio de convolucion
+50.145983
+pasada n°6
+Cantidad de hilos: 1
+Inicio de convolucion
+49.800760
+pasada n°7
+Cantidad de hilos: 1
+Inicio de convolucion
+50.318102
+pasada n°8
+Cantidad de hilos: 1
+Inicio de convolucion
+50.050907
+pasada n°9
+Cantidad de hilos: 1
+Inicio de convolucion
+50.034829
+pasada n°10
+Cantidad de hilos: 1
+Inicio de convolucion
+50.049920
+pasada n°11
+Cantidad de hilos: 1
+Inicio de convolucion
+49.868623
+pasada n°12
+Cantidad de hilos: 1
+Inicio de convolucion
+50.186452
+pasada n°13
+Cantidad de hilos: 1
+Inicio de convolucion
+50.010333
+pasada n°14
+Cantidad de hilos: 1
+Inicio de convolucion
+50.090129
+pasada n°15
+Cantidad de hilos: 1
+Inicio de convolucion
+50.046533
+pasada n°16
+Cantidad de hilos: 1
+Inicio de convolucion
+50.026717
+pasada n°17
+Cantidad de hilos: 1
+Inicio de convolucion
+50.029838
+pasada n°18
+Cantidad de hilos: 1
+Inicio de convolucion
+50.030586
+pasada n°19
+Cantidad de hilos: 1
+Inicio de convolucion
+50.044391
+pasada n°20
+Cantidad de hilos: 1
+Inicio de convolucion
+50.034687
+pasada n°21
+Cantidad de hilos: 1
+Inicio de convolucion
+50.027487
+pasada n°22
+Cantidad de hilos: 1
+Inicio de convolucion
+50.032807
+pasada n°23
+Cantidad de hilos: 1
+Inicio de convolucion
+50.043031
+pasada n°24
+Cantidad de hilos: 1
+Inicio de convolucion
+50.040549
+pasada n°25
+Cantidad de hilos: 1
+Inicio de convolucion
+50.035122
+pasada n°26
+Cantidad de hilos: 1
+Inicio de convolucion
+50.044671
+pasada n°27
+Cantidad de hilos: 1
+Inicio de convolucion
+50.040135
+pasada n°28
+Cantidad de hilos: 1
+Inicio de convolucion
+50.033640
+pasada n°29
+Cantidad de hilos: 1
+Inicio de convolucion
+50.025713
+pasada n°30
+Cantidad de hilos: 2
+Inicio de convolucion
+25.305326
+pasada n°1
+Cantidad de hilos: 2
+Inicio de convolucion
+25.314590
+pasada n°2
+Cantidad de hilos: 2
+Inicio de convolucion
+25.303035
+pasada n°3
+Cantidad de hilos: 2
+Inicio de convolucion
+26.000747
+pasada n°4
+Cantidad de hilos: 2
+Inicio de convolucion
+25.299220
+pasada n°5
+Cantidad de hilos: 2
+Inicio de convolucion
+25.315041
+pasada n°6
+Cantidad de hilos: 2
+Inicio de convolucion
+25.304585
+pasada n°7
+Cantidad de hilos: 2
+Inicio de convolucion
+25.334868
+pasada n°8
+Cantidad de hilos: 2
+Inicio de convolucion
+25.313444
+pasada n°9
+Cantidad de hilos: 2
+Inicio de convolucion
+25.300275
+pasada n°10
+Cantidad de hilos: 2
+Inicio de convolucion
+25.306992
+pasada n°11
+Cantidad de hilos: 2
+Inicio de convolucion
+25.298507
+pasada n°12
+Cantidad de hilos: 2
+Inicio de convolucion
+25.312268
+pasada n°13
+Cantidad de hilos: 2
+Inicio de convolucion
+25.302769
+pasada n°14
+Cantidad de hilos: 2
+Inicio de convolucion
+25.366176
+pasada n°15
+Cantidad de hilos: 2
+Inicio de convolucion
+26.264414
+pasada n°16
+Cantidad de hilos: 2
+Inicio de convolucion
+25.729855
+pasada n°17
+Cantidad de hilos: 2
+Inicio de convolucion
+27.146315
+pasada n°18
+Cantidad de hilos: 2
+Inicio de convolucion
+26.096099
+pasada n°19
+Cantidad de hilos: 2
+Inicio de convolucion
+25.368709
+pasada n°20
+Cantidad de hilos: 2
+Inicio de convolucion
+25.334069
+pasada n°21
+Cantidad de hilos: 2
+Inicio de convolucion
+25.343763
+pasada n°22
+Cantidad de hilos: 2
+Inicio de convolucion
+25.310327
+pasada n°23
+Cantidad de hilos: 2
+Inicio de convolucion
+25.405928
+pasada n°24
+Cantidad de hilos: 2
+Inicio de convolucion
+25.303688
+pasada n°25
+Cantidad de hilos: 2
+Inicio de convolucion
+25.331491
+pasada n°26
+Cantidad de hilos: 2
+Inicio de convolucion
+25.418812
+pasada n°27
+Cantidad de hilos: 2
+Inicio de convolucion
+25.311096
+pasada n°28
+Cantidad de hilos: 2
+Inicio de convolucion
+25.427367
+pasada n°29
+Cantidad de hilos: 2
+Inicio de convolucion
+25.320549
+pasada n°30
+Cantidad de hilos: 4
+Inicio de convolucion
+22.698115
+pasada n°1
+Cantidad de hilos: 4
+Inicio de convolucion
+22.669479
+pasada n°2
+Cantidad de hilos: 4
+Inicio de convolucion
+22.661274
+pasada n°3
+Cantidad de hilos: 4
+Inicio de convolucion
+22.696958
+pasada n°4
+Cantidad de hilos: 4
+Inicio de convolucion
+22.699853
+pasada n°5
+Cantidad de hilos: 4
+Inicio de convolucion
+22.710221
+pasada n°6
+Cantidad de hilos: 4
+Inicio de convolucion
+22.720456
+pasada n°7
+Cantidad de hilos: 4
+Inicio de convolucion
+22.702581
+pasada n°8
+Cantidad de hilos: 4
+Inicio de convolucion
+22.708393
+pasada n°9
+Cantidad de hilos: 4
+Inicio de convolucion
+22.769588
+pasada n°10
+Cantidad de hilos: 4
+Inicio de convolucion
+22.757518
+pasada n°11
+Cantidad de hilos: 4
+Inicio de convolucion
+22.736616
+pasada n°12
+Cantidad de hilos: 4
+Inicio de convolucion
+22.713606
+pasada n°13
+Cantidad de hilos: 4
+Inicio de convolucion
+22.739067
+pasada n°14
+Cantidad de hilos: 4
+Inicio de convolucion
+22.703736
+pasada n°15
+Cantidad de hilos: 4
+Inicio de convolucion
+22.729804
+pasada n°16
+Cantidad de hilos: 4
+Inicio de convolucion
+22.704142
+pasada n°17
+Cantidad de hilos: 4
+Inicio de convolucion
+23.502724
+pasada n°18
+Cantidad de hilos: 4
+Inicio de convolucion
+23.015155
+pasada n°19
+Cantidad de hilos: 4
+Inicio de convolucion
+22.744622
+pasada n°20
+Cantidad de hilos: 4
+Inicio de convolucion
+22.704428
+pasada n°21
+Cantidad de hilos: 4
+Inicio de convolucion
+22.701481
+pasada n°22
+Cantidad de hilos: 4
+Inicio de convolucion
+22.734009
+pasada n°23
+Cantidad de hilos: 4
+Inicio de convolucion
+22.696461
+pasada n°24
+Cantidad de hilos: 4
+Inicio de convolucion
+22.697176
+pasada n°25
+Cantidad de hilos: 4
+Inicio de convolucion
+22.694799
+pasada n°26
+Cantidad de hilos: 4
+Inicio de convolucion
+22.696300
+pasada n°27
+Cantidad de hilos: 4
+Inicio de convolucion
+22.703345
+pasada n°28
+Cantidad de hilos: 4
+Inicio de convolucion
+22.709492
+pasada n°29
+Cantidad de hilos: 4
+Inicio de convolucion
+22.706293
+pasada n°30
+Cantidad de hilos: 8
+Inicio de convolucion
+22.885722
+pasada n°1
+Cantidad de hilos: 8
+Inicio de convolucion
+22.856058
+pasada n°2
+Cantidad de hilos: 8
+Inicio de convolucion
+22.850380
+pasada n°3
+Cantidad de hilos: 8
+Inicio de convolucion
+22.858738
+pasada n°4
+Cantidad de hilos: 8
+Inicio de convolucion
+22.901076
+pasada n°5
+Cantidad de hilos: 8
+Inicio de convolucion
+22.882349
+pasada n°6
+Cantidad de hilos: 8
+Inicio de convolucion
+22.858578
+pasada n°7
+Cantidad de hilos: 8
+Inicio de convolucion
+22.854745
+pasada n°8
+Cantidad de hilos: 8
+Inicio de convolucion
+22.872750
+pasada n°9
+Cantidad de hilos: 8
+Inicio de convolucion
+22.848129
+pasada n°10
+Cantidad de hilos: 8
+Inicio de convolucion
+22.853182
+pasada n°11
+Cantidad de hilos: 8
+Inicio de convolucion
+22.849580
+pasada n°12
+Cantidad de hilos: 8
+Inicio de convolucion
+22.879073
+pasada n°13
+Cantidad de hilos: 8
+Inicio de convolucion
+23.064318
+pasada n°14
+Cantidad de hilos: 8
+Inicio de convolucion
+22.878047
+pasada n°15
+Cantidad de hilos: 8
+Inicio de convolucion
+22.850530
+pasada n°16
+Cantidad de hilos: 8
+Inicio de convolucion
+22.863831
+pasada n°17
+Cantidad de hilos: 8
+Inicio de convolucion
+22.874462
+pasada n°18
+Cantidad de hilos: 8
+Inicio de convolucion
+22.881353
+pasada n°19
+Cantidad de hilos: 8
+Inicio de convolucion
+22.847431
+pasada n°20
+Cantidad de hilos: 8
+Inicio de convolucion
+22.867690
+pasada n°21
+Cantidad de hilos: 8
+Inicio de convolucion
+22.884654
+pasada n°22
+Cantidad de hilos: 8
+Inicio de convolucion
+22.910127
+pasada n°23
+Cantidad de hilos: 8
+Inicio de convolucion
+22.858591
+pasada n°24
+Cantidad de hilos: 8
+Inicio de convolucion
+22.896720
+pasada n°25
+Cantidad de hilos: 8
+Inicio de convolucion
+22.856068
+pasada n°26
+Cantidad de hilos: 8
+Inicio de convolucion
+22.877931
+pasada n°27
+Cantidad de hilos: 8
+Inicio de convolucion
+22.870686
+pasada n°28
+Cantidad de hilos: 8
+Inicio de convolucion
+22.864430
+pasada n°29
+Cantidad de hilos: 8
+Inicio de convolucion
+22.844188
+pasada n°30

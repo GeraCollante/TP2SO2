@@ -1,0 +1,9 @@
+ Estudiante27 -  1CVsR5Gg
+
+gcc -Wall -pedantic -pg ej.c -lm -lnetcdf -fopenmp -o messi
+
+gprof messi gmon.out > analisis.txt
+
+sudo perf record -g ./messi 4
+
+sudo perf report
