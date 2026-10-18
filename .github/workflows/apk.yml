@@ -37,7 +37,16 @@ jobs:
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          set -o pipefail
+          ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee ../build.log
+
+      - name: Mostrar el error de compilación
+        if: failure()
+        run: |
+          grep -n -E -A14 "What went wrong|error:|Could not (find|resolve)" build.log | head -80 > err.txt || true
+          [ -s err.txt ] || tail -60 build.log > err.txt
+          msg=$(sed -e 's/%/%25/g' -e 's/\r/%0D/g' err.txt | awk 'BEGIN{ORS="%0A"}{print}')
+          echo "::error title=Gradle::${msg}"
 
       - name: Renombrar APK
         run: cp android/app/build/outputs/apk/debug/app-debug.apk Odin-vikingo.apk
