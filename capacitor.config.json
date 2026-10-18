@@ -1,0 +1,6 @@
+{
+  "appId": "com.geracollante.odin",
+  "appName": "Odin",
+  "webDir": "www",
+  "android": { "allowMixedContent": false, "backgroundColor": "#120d09" }
+}

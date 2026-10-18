@@ -1,0 +1,1680 @@
+<title>Odin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700;900&family=Grenze:wght@400;600;700&family=Noto+Sans+Runic&display=swap">
+<style>
+/* Layout: una columna como mesa de un salón vikingo de noche. Arriba el drakkar, después los guerreros,
+   la mesa de tablones en el centro y tu mano abajo. Mundo único oscuro: madera quemada, hierro y fuego. */
+:root {
+  color-scheme: dark;
+  --bg: #120d09;
+  --wood: #22180f;
+  --wood-2: #2d2016;
+  --wood-3: #3a2a1d;
+  --ink: #f1e4c8;
+  --muted: #bca681;
+  --line: #5c4630;
+  --accent: #e0a63e;
+  --accent-2: #f3c66a;
+  --accent-ink: #1c120a;
+  --good: #9ad27f;
+  --danger: #ff7a59;
+  --win-ink: #f3c66a;
+  --shadow: rgba(0, 0, 0, 0.55);
+  --card: #efe2c2;
+  --card-ink: #2b1d11;
+  --surface-2: rgba(0, 0, 0, 0.28);
+  --c0: #b3261e;
+  --c1: #b07a10;
+  --c2: #2f6d34;
+  --c3: #23579a;
+  --c4: #643a9c;
+  --c5: #b33c72;
+  --font-display: "Grenze Gotisch", "UnifrakturMaguntia", Georgia, serif;
+  --font-body: "Grenze", Georgia, "Times New Roman", serif;
+  --font-rune: "Noto Sans Runic", "Segoe UI Historic", sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background:
+    radial-gradient(120% 55% at 50% -8%, rgba(226, 120, 45, 0.24), transparent 62%),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.22) 0 2px, transparent 2px 68px),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.014) 0 1px, transparent 1px 6px),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.4;
+  padding-inline: 16px;
+  padding-block: 8px 28px;
+}
+.wrap { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent-2); outline-offset: 2px; }
+
+/* encabezado */
+.ship { margin-inline: -6px; }
+.ship svg { display: block; width: 100%; height: auto; }
+.ship .boat { transform-box: fill-box; transform-origin: 50% 80%; animation: bob 6s ease-in-out infinite; }
+.ship .sea { animation: sway 7s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(2.5px) rotate(-0.8deg); } }
+@keyframes sway { 50% { transform: translateX(-6px); } }
+.top { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: -6px; }
+.top > div { min-width: 0; }
+h1 { font-weight: 900; font-size: 60px; line-height: 0.8; letter-spacing: 0.02em; color: var(--accent-2);
+  text-shadow: 0 2px 0 #6b3510, 0 4px 0 #2a1408, 0 0 26px rgba(226, 140, 50, 0.4); }
+.runes { font-family: var(--font-rune); color: var(--muted); letter-spacing: 0.32em; font-size: 13px; opacity: 0.8; margin-bottom: 6px; }
+.sub { color: var(--muted); font-size: 14px; margin-top: 8px; }
+.band { height: 14px; opacity: 0.7; }
+.band svg { display: block; width: 100%; height: 14px; }
+
+/* botones de madera y hierro */
+.btn {
+  border: 2px solid var(--line);
+  background: linear-gradient(var(--wood-3), var(--wood-2));
+  color: var(--ink);
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  min-height: 46px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2px 0 rgba(0, 0, 0, 0.55);
+}
+.btn.primary { background: linear-gradient(#f2c05e, #c78823); border-color: #7a4c12; color: var(--accent-ink);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 2px 0 #5a3408, 0 0 20px rgba(224, 166, 62, 0.25); }
+.btn.ghost { background: transparent; }
+.btn.small { min-height: 38px; padding: 4px 12px; font-size: 17px; }
+.btn:disabled { opacity: 0.38; cursor: not-allowed; box-shadow: none; }
+.btn:not(:disabled):active { transform: translateY(1px); }
+
+/* guerreros */
+.seats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+.seat { background: linear-gradient(var(--wood-2), var(--wood)); border: 2px solid var(--line); border-radius: 12px;
+  padding: 8px 10px; display: flex; flex-direction: column; gap: 1px; min-width: 0; box-shadow: 0 3px 8px var(--shadow); }
+.seat.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 20px rgba(224, 166, 62, 0.35); }
+.seat b { font-family: var(--font-display); font-weight: 700; font-size: 24px; line-height: 1.05; overflow-wrap: anywhere; }
+.seat .meta { font-size: 14px; color: var(--muted); }
+.seat .pts { font-weight: 700; color: var(--ink); }
+.seat .tag { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-2); min-height: 15px; }
+.seat .cnt { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; font-size: 14px; color: var(--muted); margin-block: 2px; }
+.seat .cnt strong { font-family: var(--font-display); font-weight: 900; font-size: 32px; line-height: 0.9; color: var(--ink); font-variant-numeric: tabular-nums; }
+.seat .cnt.low strong { color: var(--danger); text-shadow: 0 0 12px rgba(255, 122, 89, 0.5); }
+.seat .backs { display: flex; padding-left: 4px; }
+.seat .backs i { width: 14px; height: 14px; margin-left: -4px; border-radius: 50%;
+  background: radial-gradient(circle, #e0a63e 0 2px, #5a3a14 2.5px 3px, transparent 3.5px),
+    conic-gradient(#8e2a1e 0 25%, #e6d6ae 0 50%, #8e2a1e 0 75%, #e6d6ae 0);
+  box-shadow: 0 0 0 1.5px #1c120a, 0 0 0 2.5px #6d6a64; }
+.seat .lvl { display: inline-block; margin-left: 6px; vertical-align: 4px; font-family: var(--font-body); font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em; padding: 1px 7px; border-radius: 4px; border: 1.5px solid var(--line); color: var(--muted); }
+.seat .lvl.pro { background: linear-gradient(#f2c05e, #c78823); border-color: #7a4c12; color: var(--accent-ink); }
+
+/* la mesa: tablones con remaches */
+.table {
+  position: relative;
+  background:
+    radial-gradient(90% 70% at 50% 40%, rgba(255, 190, 110, 0.11), transparent 70%),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.38) 0 2px, transparent 2px 46px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 9px),
+    linear-gradient(#4a3524, #36261a);
+  border: 3px solid #1a110a;
+  border-radius: 16px;
+  padding: 14px 14px 18px;
+  min-height: 176px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: inset 0 0 0 2px #5f4630, inset 0 0 44px rgba(0, 0, 0, 0.55), 0 8px 20px rgba(0, 0, 0, 0.55);
+}
+.table::before, .table::after { content: ""; position: absolute; bottom: 9px; width: 10px; height: 10px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #d8d3c8, #6d6a64 60%, #34322e); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.7); }
+.table::before { left: 10px; }
+.table::after { right: 10px; }
+.tablehead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.lbl { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); }
+.tv { font-family: var(--font-display); font-weight: 900; font-size: 38px; line-height: 1; color: var(--accent-2); font-variant-numeric: tabular-nums; text-shadow: 0 2px 0 #2a1408; }
+.tv small { font-family: var(--font-body); font-size: 12px; color: var(--muted); font-weight: 700; margin-right: 6px; text-shadow: none; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.empty { color: var(--muted); text-align: center; padding: 18px 8px; font-size: 17px; }
+.muted { color: var(--muted); font-size: 14px; text-align: center; }
+.takeBox { background: rgba(0, 0, 0, 0.3); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; border: 2px dashed var(--accent); }
+.takeMsg { font-weight: 700; text-align: center; }
+
+.logbox { display: flex; flex-direction: column; gap: 4px; }
+.turn { font-family: var(--font-display); font-weight: 700; font-size: 28px; line-height: 1.1; color: var(--accent-2); }
+#log { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+#log li { font-size: 14.5px; color: var(--muted); }
+#log li:last-child { color: var(--ink); font-weight: 700; }
+
+.mine { display: flex; flex-direction: column; gap: 10px; }
+.mine-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.mine-head h2 { font-size: 28px; }
+.hand { row-gap: 16px; padding-top: 10px; }
+.hint { min-height: 42px; color: var(--muted); font-weight: 600; font-size: 15px; text-align: center; text-wrap: balance; }
+.hint.ok { color: var(--good); }
+.actions { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 8px; }
+
+/* cartas de pergamino con runas */
+.card {
+  --cw: 56px;
+  width: var(--cw);
+  aspect-ratio: 5 / 7;
+  border-radius: 8px;
+  background:
+    radial-gradient(120% 90% at 28% 12%, rgba(255, 255, 255, 0.3), transparent 55%),
+    radial-gradient(transparent 55%, rgba(0, 0, 0, 0.32)),
+    var(--suit);
+  color: #fbf3df;
+  border: 0;
+  padding: 0;
+  position: relative;
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 0 0 1px rgba(80, 50, 20, 0.4), 0 2px 0 rgba(0, 0, 0, 0.5), 0 5px 12px var(--shadow);
+  font-family: var(--font-display);
+  overflow: hidden;
+  transition: transform 0.12s ease;
+}
+button.card { cursor: pointer; }
+.card::before { content: ""; position: absolute; inset: 3px; border: 1.5px solid rgba(255, 243, 214, 0.6); border-radius: 6px; }
+.card::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.035) 0 2px, transparent 2px 5px); pointer-events: none; }
+.card .num { font-size: calc(var(--cw) * 0.64); font-weight: 900; line-height: 1; color: #fbf3df; margin-top: 3px; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35); }
+.card .sym { position: absolute; width: calc(var(--cw) * 0.27); height: calc(var(--cw) * 0.27); color: #fbf3df; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.3)); }
+.card .sym.tl { top: 5px; left: 4px; }
+.card .sym.br { bottom: 5px; right: 4px; transform: rotate(180deg); }
+.card.sel { transform: translateY(-12px); box-shadow: 0 0 0 3px var(--accent-2), 0 0 18px rgba(243, 198, 106, 0.65), 0 8px 14px var(--shadow); }
+.card.big { --cw: 64px; }
+.card.mini { --cw: 36px; border-radius: 6px; }
+.card.mini::before { inset: 2px; border-width: 1px; border-radius: 4px; }
+.card.mini .sym.tl { top: 3px; left: 2px; }
+.card.mini .sym.br { bottom: 3px; right: 2px; }
+.card.dim { opacity: 0.5; }
+.card.pick { box-shadow: 0 0 0 3px var(--accent-2), 0 5px 12px var(--shadow); }
+
+.rules { background: linear-gradient(var(--wood-2), var(--wood)); border: 2px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.rules summary { font-family: var(--font-display); font-weight: 700; font-size: 21px; cursor: pointer; color: var(--accent-2); }
+.rules ul { margin: 10px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+.rules li { font-size: 15px; }
+
+/* carteles de pergamino */
+.overlay { position: fixed; inset: 0; background: rgba(6, 4, 2, 0.74); display: grid; place-items: center; padding: 16px; z-index: 10; overflow-y: auto; }
+.panel {
+  --ink: #2b1d11; --muted: #6e5536; --line: #b99d68; --surface-2: rgba(120, 80, 30, 0.13); --win-ink: #8a4f0a; --good: #2f6d34;
+  color: var(--ink);
+  background: radial-gradient(120% 80% at 50% 0%, #f8eed5, #e9d6ab 70%, #d6bd88);
+  border-radius: 14px;
+  padding: 22px 20px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: inset 0 0 0 2px #b08c50, inset 0 0 0 6px rgba(176, 140, 80, 0.25), inset 0 0 34px rgba(120, 70, 20, 0.28), 0 24px 60px rgba(0, 0, 0, 0.65);
+}
+.panel h2 { font-size: 34px; font-weight: 900; }
+.panel .btn:not(.primary) { background: transparent; color: var(--ink); border-color: var(--line); box-shadow: none; }
+.panel .lbl { color: var(--muted); }
+.scoreRows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.scoreRows li { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: baseline; background: var(--surface-2); border-radius: 10px; padding: 8px 12px; font-variant-numeric: tabular-nums; }
+.scoreRows li > span:first-child { font-family: var(--font-display); font-weight: 700; font-size: 20px; }
+.scoreRows li.lead { box-shadow: inset 0 0 0 2px var(--accent); }
+.scoreRows .add { font-weight: 700; }
+.scoreRows .tot { color: var(--muted); font-weight: 700; }
+.scoreRows .left { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 5px; padding-top: 4px; }
+.scoreRows .left.none { font-size: 14px; color: var(--muted); font-weight: 700; }
+.finalBox { display: flex; flex-direction: column; gap: 8px; background: var(--surface-2); border-radius: 12px; padding: 10px; }
+.finalBox:empty { display: none; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { border: 2px solid var(--line); background: transparent; border-radius: 8px; min-width: 48px; min-height: 44px; padding: 4px 12px;
+  font-family: var(--font-display); font-weight: 700; font-size: 19px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: linear-gradient(#f2c05e, #c78823); border-color: #7a4c12; color: var(--accent-ink); }
+.note { font-size: 14px; color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 8px; }
+
+#confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 30; }
+.panel.win { box-shadow: inset 0 0 0 2px #b08c50, inset 0 0 34px rgba(120, 70, 20, 0.28), 0 0 0 3px var(--accent), 0 0 60px rgba(224, 166, 62, 0.55), 0 24px 60px rgba(0, 0, 0, 0.6); }
+.panel.win #resTitle { color: var(--win-ink); text-align: center; font-size: 38px; line-height: 1; animation: pop 0.55s cubic-bezier(.2, 1.4, .4, 1) both; }
+.panel.bigwin #resTitle { font-size: 44px; }
+.panel.win #resSub { text-align: center; font-weight: 700; }
+.winEmoji { display: flex; justify-content: center; animation: pop 0.6s cubic-bezier(.2, 1.5, .4, 1) both, wiggle 1.6s ease-in-out 0.6s 2; }
+.winEmoji svg { width: 96px; height: 96px; }
+.panel.bigwin .winEmoji svg { width: 128px; height: 128px; }
+@keyframes pop { 0% { transform: scale(0.3) rotate(-12deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+@keyframes wiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-9deg); } 75% { transform: rotate(9deg); } }
+
+@media (max-width: 380px) {
+  .card { --cw: 50px; }
+  .card.big { --cw: 58px; }
+  h1 { font-size: 52px; }
+  .actions { grid-template-columns: 1fr 1fr; }
+  .actions .primary { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: none; }
+  .winEmoji, .panel.win #resTitle, .ship .boat, .ship .sea { animation: none; }
+}
+
+/* ---------- todo en una pantalla ---------- */
+html, body { height: 100%; }
+body { padding-block: 6px; overflow-x: hidden; }
+.wrap {
+  min-height: 100%;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto auto auto auto;
+  grid-template-areas: "top" "seats" "table" "log" "mhead" "hand" "hint" "actions";
+  --cwh: clamp(40px, min(12.4vw, calc((100vh - 470px) / 4.2)), 60px);
+  --cwt: calc(var(--cwh) + 6px);
+}
+.wrap .card { --cw: var(--cwh); }
+.wrap .card.big { --cw: var(--cwt); }
+.top { grid-area: top; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "brand . btns" "sub sub sub"; align-items: center; gap: 2px 8px; margin: 0; }
+.brand { grid-area: brand; display: flex; align-items: center; gap: 6px; min-width: 0; }
+.brand h1 { font-size: 40px; line-height: 0.9; }
+.brand .ship { width: 92px; flex: none; margin: 0; }
+.sub { grid-area: sub; margin: 0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbtns { grid-area: btns; display: flex; gap: 6px; }
+.topbtns .btn { min-height: 36px; font-size: 16px; padding: 2px 10px; }
+.seats { grid-area: seats; }
+.seat { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 8px; padding: 6px 10px; }
+.seat b { grid-column: 1 / -1; font-size: 21px; }
+.seat .cnt { margin: 0; }
+.seat .cnt strong { font-size: 27px; }
+.seat .meta { justify-self: end; white-space: nowrap; }
+.seat .tag { grid-column: 1 / -1; min-height: 0; }
+.seat .tag:empty { display: none; }
+.table { grid-area: table; min-height: 0; padding: 10px 12px 14px; gap: 6px; justify-content: center; }
+.empty { padding: 8px; }
+.logbox { grid-area: log; gap: 0; min-width: 0; }
+.turn { font-size: 22px; }
+#log li { font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#log li:not(:nth-last-child(-n+2)) { display: none; }
+.mine { display: contents; }
+.mine-head { grid-area: mhead; }
+.mine-head h2 { font-size: 22px; }
+.hand { grid-area: hand; padding-top: 12px; gap: 6px; row-gap: 8px; }
+.hint { grid-area: hint; min-height: 0; font-size: 14px; }
+.actions { grid-area: actions; }
+
+/* reglas en su propio panel */
+.rulesPanel { --ink: #f1e4c8; --muted: #bca681; --line: #5c4630; max-width: 560px;
+  background: linear-gradient(var(--wood-2), var(--wood)); box-shadow: 0 0 0 2px var(--line), 0 24px 60px rgba(0, 0, 0, 0.7); }
+.rulesHead { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.rulesPanel h2 { color: var(--accent-2); }
+.rulesPanel h3 { font-size: 22px; color: var(--accent-2); }
+.rulesPanel .runes { font-family: var(--font-rune); letter-spacing: 0.3em; color: var(--muted); font-size: 13px; }
+.ruleList { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 15.5px; }
+.flowWrap { overflow-x: auto; padding-block: 4px; }
+
+/* horizontal: dos columnas, mesa y mano a la derecha */
+@media (orientation: landscape) and (min-width: 560px) {
+  .wrap {
+    max-width: 1180px;
+    grid-template-columns: clamp(190px, 26vw, 280px) minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto auto;
+    grid-template-areas: "top top" "seats table" "log table" "log mhead" "log hand" "actions hint";
+    column-gap: 14px;
+    row-gap: 6px;
+    --cwh: clamp(36px, min(calc((100vh - 150px) / 2.85), calc((100vw - 330px) / 9.8)), 72px);
+    --cwt: var(--cwh);
+  }
+  .top { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "brand sub btns"; column-gap: 14px; }
+  .brand h1 { font-size: 34px; }
+  .brand .ship { width: 80px; }
+  .sub { font-size: 13.5px; }
+  .seats { grid-template-columns: 1fr; align-content: start; overflow-y: auto; max-height: 52vh; }
+  .logbox { align-self: start; overflow: hidden; min-height: 0; }
+  .turn { font-size: 21px; }
+  #log li:not(:nth-last-child(-n+2)) { display: list-item; }
+  #log li { white-space: normal; font-size: 13px; }
+  .table { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "head cards" "owner cards";
+    align-items: center; align-content: center; column-gap: 12px; padding: 8px 14px 12px; }
+  .tablehead { grid-area: head; flex-direction: column; align-items: flex-start; gap: 2px; align-self: end; }
+  #tableCards { grid-area: cards; }
+  #tableOwner { grid-area: owner; text-align: left; align-self: start; }
+  #takeBox { grid-area: cards; }
+  .table:has(#takeBox:not([hidden])) #tableCards { display: none; }
+  .table .takeBox { flex-direction: row; align-items: center; padding: 6px 10px; }
+  .table .takeMsg { flex: 1; text-align: left; font-size: 13.5px; }
+  .mine-head h2 { font-size: 18px; }
+  #btnSort { min-height: 30px; font-size: 14px; padding: 2px 10px; }
+  .hand { flex-wrap: nowrap; justify-content: center; overflow-x: auto; padding: 14px 8px 6px; }
+  .hint { font-size: 13.5px; align-self: center; }
+  .actions { grid-template-columns: 1fr 1fr 1fr; align-self: end; gap: 6px; }
+  .actions .btn { min-height: 42px; font-size: 17px; padding: 4px 6px; }
+  .actions .primary { grid-column: auto; }
+  /* carteles en dos columnas */
+  .resPanel { max-width: 800px; display: grid; gap: 8px 18px; padding: 14px 16px; align-items: center;
+    grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: "emoji title rows" "sub sub rows" "final final rows" "final final btns"; }
+  .resPanel > #resEmoji { grid-area: emoji; }
+  .resPanel > #resTitle { grid-area: title; }
+  .resPanel > #resSub { grid-area: sub; }
+  .resPanel > #resFinal { grid-area: final; align-self: start; }
+  .resPanel > #resRows { grid-area: rows; align-self: start; }
+  .resPanel > #resBtns { grid-area: btns; flex-direction: row; align-self: end; }
+  .resPanel > #resBtns .btn { flex: 1; }
+  .resPanel:not(.win) > #resTitle { grid-column: 1 / 3; }
+  .resPanel h2 { font-size: 28px; }
+  .resPanel .card.big { --cw: 50px; }
+  .resPanel .card.mini { --cw: 30px; }
+  .winEmoji svg, .panel.bigwin .winEmoji svg { width: 62px; height: 62px; }
+  .panel.win #resTitle, .panel.bigwin #resTitle { font-size: 30px; text-align: left; }
+  .panel.win #resSub { text-align: left; }
+  .setupPanel { padding: 14px 18px; gap: 10px 20px; }
+  .setupPanel h2 { font-size: 28px; }
+  .setupPanel > .field:not(:nth-of-type(2)) .note { display: none; }
+  .setupPanel { max-width: 720px; display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; }
+  .setupPanel > h2, .setupPanel > .stack { grid-column: 1 / -1; }
+  .setupPanel > .stack { flex-direction: row; }
+  .setupPanel > .stack .btn { flex: 1; }
+}
+
+/* columna lateral (en vertical se reparte por la grilla) */
+.side { display: contents; }
+.seat { grid-template-columns: minmax(0, 1fr) auto; padding: 6px 10px; row-gap: 0; }
+.seat b { grid-column: 1; grid-row: 1; font-size: 20px; }
+.seat .meta { grid-column: 2; grid-row: 1; align-self: center; }
+.seat .cnt { grid-column: 1 / -1; grid-row: 2; flex-wrap: nowrap; white-space: nowrap; }
+.seat .cnt strong { font-size: 25px; }
+.seat .backs i { width: 13px; height: 13px; margin-left: -5px; }
+.seat .tag { grid-column: 1 / -1; grid-row: 3; }
+.seat.active .tag { display: none; }
+@media (orientation: landscape) and (min-width: 560px) {
+  .wrap {
+    grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+    grid-template-areas: "top top" "side table" "side mhead" "side hand" "side hint";
+    --cwh: clamp(36px, min(calc((100vh - 172px) / 2.9), calc((100vw - 330px) / 9.8)), 72px);
+  }
+  .side { grid-area: side; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+  .side .seats { flex: 0 1 auto; min-height: 0; max-height: none; }
+  .side .logbox { flex: 1 1 0; min-height: 0; overflow: hidden; }
+  .side .actions { margin-top: auto; align-self: stretch; }
+  .seat b { font-size: 19px; }
+  .seat .cnt strong { font-size: 23px; }
+}
+
+/* carteles altos: centrados pero con scroll si no entran */
+.overlay { display: flex; align-items: flex-start; justify-content: center; }
+.overlay > .panel { margin: auto; }
+
+/* ---------- sin saltos: cada zona tiene un tamaño fijo, solo cambia lo de adentro ---------- */
+.wrap { --cwh: clamp(40px, min(12.4vw, calc((100vh - 492px) / 4.2)), 60px); --cwt: var(--cwh); }
+.seat { height: 64px; position: relative; overflow: visible; }
+.seat b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.seat .tag { display: block; position: absolute; top: -9px; left: 50%; transform: translateX(-50%); padding: 0 8px; border-radius: 4px;
+  background: #1c120a; border: 1.5px solid var(--line); font-size: 11px; line-height: 16px; min-height: 0; color: var(--accent-2); white-space: nowrap; }
+.seat .tag:empty, .seat.active .tag { display: none; }
+.logbox { height: 64px; overflow: hidden; }
+.turn { height: 28px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mine-head { height: 36px; }
+.hand { height: calc(var(--cwh) * 2.8 + 30px); padding: 14px 8px 8px; align-content: flex-start; overflow: hidden; }
+.hint { height: 40px; line-height: 20px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.table { overflow: hidden; }
+.tablehead { min-height: 40px; align-items: center; }
+#tableCards { flex: 1 1 auto; min-height: 0; align-items: center; align-content: center; }
+#tableOwner { height: 18px; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.table .takeBox { flex-direction: row; align-items: center; padding: 6px 10px; gap: 8px; }
+.table .takeMsg { flex: 1; text-align: left; font-size: 13.5px; line-height: 1.3; }
+.table:has(#takeBox:not([hidden])) #tableCards { display: none; }
+@media (orientation: landscape) and (min-width: 560px) {
+  .wrap { --cwh: clamp(36px, min(calc((100vh - 186px) / 2.85), calc((100vw - 330px) / 9.8)), 72px); }
+  .seat { height: 58px; }
+  .side .seats { overflow-y: auto; padding-top: 9px; margin-top: -9px; }
+  .side .logbox { height: auto; }
+  .turn { height: auto; }
+  .mine-head { height: 30px; }
+  .hand { height: calc(var(--cwh) * 1.4 + 22px); }
+  .hint { height: 36px; line-height: 18px; }
+  .table { grid-template-columns: 128px minmax(0, 1fr); }
+  .tablehead { min-height: 0; }
+}
+
+.wrap { height: 100%; min-height: 0; }
+#tableOwner:empty { display: none; }
+.table #tableCards .takeBox .card { --cw: calc(var(--cwt) * 0.8); }
+@media (orientation: landscape) and (min-width: 560px) {
+  .tv small { display: block; margin: 0 0 2px; }
+  .tv { font-size: 34px; }
+}
+
+.wrap { --cwh: clamp(40px, min(12.4vw, calc((100vh - 510px) / 4.2)), 60px); }
+.seat .tag { grid-row: auto; grid-column: auto; }
+.tablehead { flex-wrap: nowrap; }
+.tv { font-size: 30px; white-space: nowrap; }
+.table::before, .table::after { width: 7px; height: 7px; bottom: 4px; }
+.table::before { left: 4px; }
+.table::after { right: 4px; }
+@media (orientation: landscape) and (min-width: 560px) {
+  .wrap { --cwh: clamp(36px, min(calc((100vh - 186px) / 2.85), calc((100vw - 330px) / 9.8)), 72px); }
+}
+
+/* ---------- v3: mesa y mano flexibles, cartas medidas por JS ---------- */
+.wrap { grid-template-rows: auto auto minmax(0, 1fr) auto auto minmax(0, 2fr) auto auto; --cwt: var(--cwh); }
+.topbtns .btn { padding: 2px 12px; }
+.brand .ship { width: 76px; }
+.hand { height: auto; min-height: 0; align-content: center; padding: 14px 8px 8px; }
+.mine-head { height: 34px; }
+#btnSort { min-height: 32px; font-size: 15px; padding: 2px 10px; }
+.actions { grid-template-columns: 1.3fr 1fr 1fr; }
+.actions .primary { grid-column: auto; }
+.actions .btn { min-height: 46px; padding: 4px 6px; }
+/* mesa: datos al costado, cartas al centro */
+.table { display: grid; grid-template-columns: 96px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: "head cards" "owner cards"; align-items: center; column-gap: 10px; padding: 10px 12px; }
+.tablehead { grid-area: head; flex-direction: column; align-items: flex-start; gap: 2px; align-self: end; min-height: 0; }
+.tv small { display: block; margin: 0 0 2px; }
+.tv { font-size: 30px; }
+#tableCards { grid-area: cards; height: 100%; }
+#takeBox { grid-area: cards; }
+#tableOwner { grid-area: owner; text-align: left; align-self: start; height: auto; line-height: 1.25; white-space: normal; font-size: 13px; }
+.table .takeBox { flex-direction: column; align-items: center; justify-content: center; padding: 4px 8px; gap: 3px; border-width: 1.5px; }
+.table .takeMsg { flex: none; font-size: 12.5px; text-align: center; line-height: 1.2; }
+.table .takeBox .card, .table #tableCards .takeBox .card { --cw: calc(var(--cwh) * 0.78); }
+.table #takeBox .card { --cw: calc(var(--cwh) * 0.85); }
+@media (orientation: landscape) and (min-width: 560px) {
+  .wrap { grid-template-rows: auto minmax(0, 1fr) auto minmax(0, 1fr) auto; }
+  .hand { height: auto; padding: 14px 8px 6px; }
+  .table { grid-template-columns: 128px minmax(0, 1fr); }
+  .actions { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+.table .takeBox .card, .table #tableCards .takeBox .card { --cw: calc(var(--cwt) * 0.8); }
+.table #takeBox .card { --cw: calc(var(--cwt) * 0.85); }
+
+.tablehead:has(#tableVal:not(:empty)) #tableLbl { display: none; }
+.tablehead { align-self: center; }
+
+/* mano y mesa repartidas según lo que necesita cada una */
+.wrap { grid-template-rows: auto auto minmax(0, 1fr) auto auto minmax(0, 1.75fr) auto auto; }
+/* con más de 2 jugadores, casillas compactas */
+.seats.many { grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); gap: 6px; }
+.seats.many .seat { height: 58px; padding: 5px 8px; grid-template-columns: minmax(0, 1fr) auto; }
+.seats.many .seat b { grid-column: 1 / -1; font-size: 18px; }
+.seats.many .seat .lvl, .seats.many .seat .backs { display: none; }
+.seats.many .seat .cnt { grid-column: 1; grid-row: 2; font-size: 12px; gap: 4px; }
+.seats.many .seat .cnt strong { font-size: 22px; }
+.seats.many .seat .meta { grid-column: 2; grid-row: 2; font-size: 12.5px; }
+.seats.many .seat::before, .seats.many .seat::after { display: none; }
+@media (orientation: landscape) and (min-width: 560px) {
+  .wrap { grid-template-rows: auto minmax(0, 1fr) auto minmax(0, 1fr) auto; }
+  .side .seats.many { grid-template-columns: 1fr 1fr; }
+}
+
+.seats.many .seat .cnt { font-size: 0; }
+.seats.many .seat .cnt strong { font-size: 22px; }
+.seats.many .seat .cnt strong::before { content: ""; display: inline-block; width: 10px; height: 14px; margin-right: 6px; vertical-align: 1px;
+  border-radius: 2px; background: #8e2a1e; box-shadow: 0 0 0 1.5px #e6d6ae; }
+
+/* ---------- panel online ---------- */
+.topbtns { gap: 5px; }
+.topbtns .btn { padding: 2px 9px; }
+.brand .ship { width: 60px; }
+.onlinePanel { max-width: 420px; }
+.txt { width: 100%; min-height: 46px; border-radius: 8px; border: 2px solid var(--line); background: rgba(255, 255, 255, 0.55); color: var(--ink);
+  font-family: var(--font-body); font-size: 18px; font-weight: 700; padding: 6px 12px; }
+.txt:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.txt.code { font-family: var(--font-display); font-size: 24px; letter-spacing: 0.25em; text-transform: uppercase; text-align: center; }
+.joinRow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+.orline { text-align: center; color: var(--muted); font-size: 14px; }
+.codeRow { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.codeBig { font-family: var(--font-display); font-weight: 900; font-size: 54px; letter-spacing: 0.18em; line-height: 1; color: var(--win-ink); user-select: all; }
+@media (orientation: landscape) and (min-width: 560px) {
+  .brand .ship { width: 72px; }
+  .onlinePanel { max-width: 640px; }
+}
+
+@media (orientation: portrait), (max-width: 559px) {
+  .brand h1 { font-size: clamp(30px, 9vw, 40px); }
+  .brand .ship { width: clamp(40px, 13vw, 60px); }
+  .topbtns { gap: 4px; }
+  .topbtns .btn { padding: 2px clamp(6px, 2vw, 9px); font-size: clamp(14px, 4.1vw, 16px); }
+}
+</style>
+
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <h1>Odin</h1>
+      <div class="ship" aria-hidden="true">
+        <svg viewBox="0 0 360 132" role="img">
+          <defs>
+            <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7" result="n"/>
+              <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+            <filter id="roughSm" x="-10%" y="-10%" width="120%" height="120%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="1" seed="3" result="n"/>
+              <feDisplacementMap in="SourceGraphic" in2="n" scale="1.3" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+            <pattern id="stripes" width="24" height="10" patternUnits="userSpaceOnUse">
+              <rect width="12" height="10" fill="#a3271c"/><rect x="12" width="12" height="10" fill="#eadcbb"/>
+            </pattern>
+            <radialGradient id="moonGlow"><stop offset="0" stop-color="#f6e7c2" stop-opacity=".5"/><stop offset="1" stop-color="#f6e7c2" stop-opacity="0"/></radialGradient>
+          </defs>
+          <g filter="url(#roughSm)">
+            <circle cx="270" cy="24" r="26" fill="url(#moonGlow)"/>
+            <circle cx="270" cy="24" r="10" fill="#efe2c2"/>
+            <circle cx="266" cy="21" r="2.2" fill="#d8c79f"/><circle cx="273" cy="28" r="1.6" fill="#d8c79f"/>
+            <g fill="#f1e4c8"><circle cx="80" cy="14" r="1.2"/><circle cx="104" cy="7" r="1"/><circle cx="246" cy="48" r="1"/><circle cx="350" cy="56" r="1.1"/><circle cx="20" cy="12" r="1"/><circle cx="300" cy="10" r="1"/></g>
+          </g>
+          <g class="boat" filter="url(#rough)" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M50 70 L178 8 L312 66" fill="none" stroke="#7d6a52" stroke-width="1.2"/>
+            <path d="M178 82 V6" stroke="#2a1b10" stroke-width="5"/>
+            <path d="M130 18 L226 18 C 233 40, 231 58, 223 72 L 133 72 C 125 58, 123 40, 130 18 Z" fill="url(#stripes)" stroke="#1c120a" stroke-width="2.5"/>
+            <path d="M126 16 H230" stroke="#2a1b10" stroke-width="4"/>
+            <path d="M48 76 C 26 64, 20 42, 34 32 C 46 24, 60 36, 50 46 C 43 52, 34 45, 41 39" fill="none" stroke="#1c120a" stroke-width="9"/>
+            <path d="M48 76 C 26 64, 20 42, 34 32 C 46 24, 60 36, 50 46 C 43 52, 34 45, 41 39" fill="none" stroke="#8a5a30" stroke-width="5"/>
+            <path d="M312 74 C 332 60, 336 42, 326 30" fill="none" stroke="#1c120a" stroke-width="10"/>
+            <path d="M312 74 C 332 60, 336 42, 326 30" fill="none" stroke="#8a5a30" stroke-width="6"/>
+            <path d="M318 31 C 320 19, 336 13, 350 19 L 357 23 L 347 26 L 354 31 L 341 31 C 335 35, 326 37, 320 34 Z" fill="#8a5a30" stroke="#1c120a" stroke-width="2.5"/>
+            <path d="M323 20 L 315 9 M 331 17 L 328 6 M 324 34 L 320 42 M 330 35 L 329 44" stroke="#1c120a" stroke-width="2.5"/>
+            <circle cx="339" cy="22" r="1.9" fill="#f3c66a"/>
+            <path d="M40 78 C 90 112, 270 112, 316 74 L 304 70 C 262 84, 100 86, 52 72 Z" fill="#7a4e2a" stroke="#1c120a" stroke-width="3"/>
+            <path d="M58 84 C 110 104, 250 104, 300 82" fill="none" stroke="#4e3019" stroke-width="2"/>
+            <path d="M70 92 C 120 108, 240 108, 290 90" fill="none" stroke="#4e3019" stroke-width="2"/>
+            <g stroke="#1c120a" stroke-width="2.2"><circle cx="80" cy="73.6" r="10" fill="#b3261e"/><path d="M70 73.6 H90 M80 63.6 V83.6" stroke="rgba(28,18,10,.55)" stroke-width="1.6"/><circle cx="80" cy="73.6" r="3" fill="#8d8a83"/><circle cx="106" cy="76.5" r="10" fill="#e6d6ae"/><path d="M96 76.5 H116 M106 66.5 V86.5" stroke="rgba(28,18,10,.55)" stroke-width="1.6"/><circle cx="106" cy="76.5" r="3" fill="#8d8a83"/><circle cx="132" cy="78.8" r="10" fill="#23579a"/><path d="M122 78.8 H142 M132 68.8 V88.8" stroke="rgba(28,18,10,.55)" stroke-width="1.6"/><circle cx="132" cy="78.8" r="3" fill="#8d8a83"/><circle cx="158" cy="80.2" r="10" fill="#e0a63e"/><path d="M148 80.2 H168 M158 70.2 V90.2" stroke="rgba(28,18,10,.55)" stroke-width="1.6"/><circle cx="158" cy="80.2" r="3" fill="#8d8a83"/><circle cx="184" cy="80.5" r="10" fill="#b3261e"/><path d="M174 80.5 H194 M184 70.5 V90.5" stroke="rgba(28,18,10,.55)" stroke-width="1.6"/><circle cx="184" cy="80.5" r="3" fill="#8d8a83"/><circle cx="210" cy="79.7" r="10" fill="#e6d6ae"/><path d="M200 79.7 H220 M210 69.7 V89.7" stroke="rgba(28,18,10,.55)" stroke-width="1.6"/><circle cx="210" cy="79.7" r="3" fill="#8d8a83"/><circle cx="236" cy="77.9" r="10" fill="#23579a"/><path d="M226 77.9 H246 M236 67.9 V87.9" stroke="rgba(28,18,10,.55)" stroke-width="1.6"/><circle cx="236" cy="77.9" r="3" fill="#8d8a83"/><circle cx="262" cy="75.2" r="10" fill="#e0a63e"/><path d="M252 75.2 H272 M262 65.2 V85.2" stroke="rgba(28,18,10,.55)" stroke-width="1.6"/><circle cx="262" cy="75.2" r="3" fill="#8d8a83"/><circle cx="288" cy="72.1" r="10" fill="#b3261e"/><path d="M278 72.1 H298 M288 62.1 V82.1" stroke="rgba(28,18,10,.55)" stroke-width="1.6"/><circle cx="288" cy="72.1" r="3" fill="#8d8a83"/></g>
+            <g stroke="#5a3a20" stroke-width="2.6"><path d="M92 94 L 76 120"/><path d="M132 98 L 118 125"/><path d="M172 99 L 160 127"/><path d="M212 98 L 202 126"/><path d="M252 95 L 244 122"/></g>
+          </g>
+          <g class="sea" filter="url(#roughSm)" fill="none" stroke-linecap="round">
+            <path d="M-20 110 q 15 -7 30 0 q 15 7 30 0 q 15 -7 30 0 q 15 7 30 0 q 15 -7 30 0 q 15 7 30 0 q 15 -7 30 0 q 15 7 30 0 q 15 -7 30 0 q 15 7 30 0 q 15 -7 30 0 q 15 7 30 0 q 15 -7 30 0 q 15 7 30 0 q 15 -7 30 0 q 15 7 30 0 q 15 -7 30 0 q 15 7 30 0 q 15 -7 30 0 q 15 7 30 0 q 15 -7 30 0 q 15 7 30 0 q 15 -7 30 0 q 15 7 30 0 q 15 -7 30 0 q 15 7 30 0 q 15 -7 30 0 q 15 7 30 0" stroke="#4f86a8" stroke-width="2.6"/>
+            <path d="M-20 120 q 15 -6 30 0 q 15 6 30 0 q 15 -6 30 0 q 15 6 30 0 q 15 -6 30 0 q 15 6 30 0 q 15 -6 30 0 q 15 6 30 0 q 15 -6 30 0 q 15 6 30 0 q 15 -6 30 0 q 15 6 30 0 q 15 -6 30 0 q 15 6 30 0 q 15 -6 30 0 q 15 6 30 0 q 15 -6 30 0 q 15 6 30 0 q 15 -6 30 0 q 15 6 30 0 q 15 -6 30 0 q 15 6 30 0 q 15 -6 30 0 q 15 6 30 0 q 15 -6 30 0 q 15 6 30 0 q 15 -6 30 0 q 15 6 30 0" stroke="#3a6a88" stroke-width="2.2" transform="translate(15 0)"/>
+            <path d="M-20 129 q 15 -5 30 0 q 15 5 30 0 q 15 -5 30 0 q 15 5 30 0 q 15 -5 30 0 q 15 5 30 0 q 15 -5 30 0 q 15 5 30 0 q 15 -5 30 0 q 15 5 30 0 q 15 -5 30 0 q 15 5 30 0 q 15 -5 30 0 q 15 5 30 0 q 15 -5 30 0 q 15 5 30 0 q 15 -5 30 0 q 15 5 30 0 q 15 -5 30 0 q 15 5 30 0 q 15 -5 30 0 q 15 5 30 0 q 15 -5 30 0 q 15 5 30 0 q 15 -5 30 0 q 15 5 30 0 q 15 -5 30 0 q 15 5 30 0" stroke="#2c5068" stroke-width="2"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <p class="sub" id="sub"></p>
+    <div class="topbtns">
+      <button class="btn ghost small" id="btnRules" type="button">Reglas</button>
+      <button class="btn ghost small" id="btnOnline" type="button">Online</button>
+      <button class="btn ghost small" id="btnNew" type="button" title="Nueva partida">Nueva</button>
+    </div>
+  </header>
+
+  <div class="side">
+  <section class="seats" id="seats" aria-label="Jugadores"></section>
+  <section class="logbox" aria-live="polite">
+    <p class="turn" id="turn"></p>
+    <ul id="log"></ul>
+  </section>
+  <div class="actions">
+    <button class="btn primary" id="btnPlay" type="button">Jugar</button>
+    <button class="btn" id="btnPass" type="button">Pasar</button>
+    <button class="btn ghost" id="btnHint" type="button" title="Marca la jugada que haría el Experto">Pista</button>
+  </div>
+  </div>
+
+  <section class="table" aria-label="Mesa">
+    <div class="tablehead">
+      <span class="lbl" id="tableLbl">Mesa</span>
+      <span class="tv" id="tableVal"></span>
+    </div>
+    <div class="takeBox" id="takeBox" hidden>
+      <p class="takeMsg">Robá una · el resto se descarta</p>
+      <div class="row" id="takeRow"></div>
+    </div>
+    <div class="row" id="tableCards"></div>
+    <p class="muted" id="tableOwner"></p>
+  </section>
+
+
+  <section class="mine" aria-label="Tu mano">
+    <div class="mine-head">
+      <h2>Tu mano</h2>
+      <button class="btn ghost small" id="btnSort" type="button"></button>
+    </div>
+    <div class="row hand" id="hand"></div>
+    <p class="hint" id="hint"></p>
+  </section>
+
+</div>
+
+
+<div class="overlay" id="ovOnline" hidden>
+  <div class="panel onlinePanel" role="dialog" aria-modal="true" aria-labelledby="onTitle">
+    <div class="rulesHead">
+      <h2 id="onTitle">Jugar online</h2>
+      <button class="btn small" id="btnOnClose" type="button">Cerrar</button>
+    </div>
+    <div id="onNA" hidden>
+      <p><b>Para jugar online tenés que iniciar sesión en Claude.</b> Si ves "Iniciar sesión" arriba de la página, tocalo (si no tenés cuenta, se crea gratis), y después volvé a abrir este mismo link.</p>
+      <p class="note">Contra los bots podés jugar igual, sin cuenta.</p>
+    </div>
+    <div class="stack" id="onStart" hidden>
+      <div class="field">
+        <label class="lbl" for="onName">Tu nombre</label>
+        <input class="txt" id="onName" maxlength="14" autocomplete="nickname" placeholder="Vikingo">
+      </div>
+      <button class="btn primary" id="btnCreate" type="button">Crear sala</button>
+      <p class="orline">o unite a la de otro</p>
+      <div class="joinRow">
+        <input class="txt code" id="onCode" maxlength="4" placeholder="CÓDIGO" autocapitalize="characters" autocomplete="off" aria-label="Código de la sala">
+        <button class="btn" id="btnJoin" type="button">Unirme</button>
+      </div>
+      <p class="note" id="onMsg" aria-live="polite"></p>
+      <p class="note">Cada uno juega desde su celular. Todos tienen que abrir el juego con la sesión de Claude iniciada.</p>
+    </div>
+    <div class="stack" id="onLobby" hidden>
+      <p class="lbl">Código de la sala</p>
+      <div class="codeRow"><div class="codeBig" id="onCodeBig"></div><button class="btn small" id="btnCopy" type="button">Copiar</button></div>
+      <p class="note" id="onLobbyMsg" aria-live="polite"></p>
+      <ul class="scoreRows" id="onList"></ul>
+      <button class="btn primary" id="btnOnStart" type="button">Empezar partida</button>
+      <button class="btn ghost" id="btnLeave" type="button">Salir de la sala</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ovRules" hidden>
+  <div class="panel rulesPanel" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
+    <div class="rulesHead">
+      <h2 id="rulesTitle">Las leyes de Odín</h2>
+      <button class="btn small" id="btnRulesClose" type="button">Cerrar</button>
+    </div>
+    <p class="runes" aria-hidden="true">ᛟᛞᛁᚾ ᚨᛚᚠᛟᛞᚱ</p>
+    <ul class="ruleList">
+      <li>Ganás la mano si te quedás sin cartas. Cada carta que le sobra a cada uno al final vale 1 punto en contra. Gana la partida el que tenga menos puntos cuando alguien llega al límite.</li>
+      <li>En tu turno hacés una sola cosa: jugar cartas o pasar.</li>
+      <li>Tus cartas tienen que valer más que las de la mesa, y ser la misma cantidad o una más.</li>
+      <li>Si jugás varias, tienen que ser todas del mismo número o todas del mismo color.</li>
+      <li>El valor no se suma: los números forman el número más grande posible. Un 2 y un 8 valen 82. Un 2, un 4 y un 9 valen 942.</li>
+      <li>Después de jugar, robás una de las cartas que había antes en la mesa. El resto se descarta.</li>
+      <li>Si pasan todos menos uno, se termina la ronda y empieza el último que jugó.</li>
+      <li>Al arrancar una ronda, si todas tus cartas son del mismo número o color, tirá todas y cerrás la mano.</li>
+    </ul>
+    <h3>Cómo fluye una ronda</h3>
+    <div class="flowWrap">
+<pre class="mermaid">
+%%{init: {"flowchart": {"nodeSpacing": 40, "rankSpacing": 56, "padding": 16, "curve": "basis", "htmlLabels": true}, "themeVariables": {"fontSize": "15px"}}}%%
+flowchart TD
+  A(["Arranca la ronda"]) --> B["El que arranca juega una carta<br/>o un set del mismo número o color"]
+  B --> C{"Turno del siguiente"}
+  C -->|"Juega"| D["Misma cantidad o una más,<br/>con valor mayor que la mesa"]
+  D --> E{"¿Se quedó sin cartas?"}
+  E -->|"Sí"| F(["Fin de la mano:<br/>cada carta que sobra suma 1 punto"])
+  E -->|"No"| G["Roba 1 carta de las que había<br/>antes en la mesa y descarta el resto"]
+  G --> C
+  C -->|"Pasa"| H{"¿Pasaron todos<br/>menos el que jugó último?"}
+  H -->|"No"| C
+  H -->|"Sí"| I["Se descarta la mesa.<br/>Arranca el que jugó último"]
+  I --> B
+
+  classDef inicio fill:#f6dc9a,stroke:#c48f10,stroke-width:2px,color:#14283d
+  classDef paso fill:#cfe2f5,stroke:#2563b8,stroke-width:2px,color:#14283d
+  classDef pregunta fill:#e3d6f2,stroke:#7b3fb5,stroke-width:2px,color:#14283d
+  classDef juega fill:#cfeadb,stroke:#2e8b57,stroke-width:2px,color:#14283d
+  classDef pasa fill:#f7d4d0,stroke:#d2402f,stroke-width:2px,color:#14283d
+  classDef fin fill:#f6dc9a,stroke:#c48f10,stroke-width:3px,color:#14283d
+  class A inicio
+  class B paso
+  class C,E,H pregunta
+  class D,G juega
+  class I pasa
+  class F fin
+  linkStyle default stroke:#7f9bb5,stroke-width:2px
+</pre>
+    </div>
+  </div>
+</div>
+
+<canvas id="confetti" aria-hidden="true" hidden></canvas>
+
+<div class="overlay" id="ovResult" hidden>
+  <div class="panel resPanel" role="dialog" aria-modal="true" aria-labelledby="resTitle">
+    <div class="winEmoji" id="resEmoji" aria-hidden="true" hidden></div>
+    <h2 id="resTitle"></h2>
+    <p id="resSub"></p>
+    <div class="finalBox" id="resFinal"></div>
+    <ul class="scoreRows" id="resRows"></ul>
+    <div class="stack" id="resBtns"></div>
+  </div>
+</div>
+
+<div class="overlay" id="ovSetup" hidden>
+  <div class="panel setupPanel" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+    <h2 id="setTitle">Nueva partida</h2>
+    <div class="field">
+      <span class="lbl">Rivales</span>
+      <div class="seg" id="segBots"></div>
+      <p class="note">Con 2 jugadores se usan solo 4 colores.</p>
+    </div>
+    <div class="field">
+      <span class="lbl">Dificultad</span>
+      <div class="seg" id="segLevel"></div>
+      <p class="note">Experto abre con lo que no es su color, no pasa nunca y te bloquea con sets grandes cuando te quedan pocas cartas.</p>
+    </div>
+    <div class="field">
+      <span class="lbl">Se juega a</span>
+      <div class="seg" id="segTarget"></div>
+      <p class="note">10 puntos para algo corto, 15 es lo recomendado, 20 para una partida larga.</p>
+    </div>
+    <div class="stack">
+      <button class="btn primary" id="btnStart" type="button">Empezar</button>
+      <button class="btn ghost" id="btnCancel" type="button">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var COLORS = ['rojo', 'amarillo', 'verde', 'azul', 'violeta', 'rosa'];
+  var BOT_NAMES = ['Thor', 'Freya', 'Loki', 'Heimdall', 'Baldur'];
+  var G = null;
+  var MY = 0; // asiento de este dispositivo
+  var settings = { bots: 1, target: 15, level: 'experto' };
+  var sortMode = 'color';
+  var selected = new Set();
+  var timer = null;
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function pl(n, s, p) { return n + ' ' + (n === 1 ? s : p); }
+  function lbl(c) { return c.n + ' ' + COLORS[c.c]; }
+
+  //ENGINE_START
+  function isSet(cards) {
+    if (!cards.length) return false;
+    return cards.every(function (c) { return c.n === cards[0].n; }) ||
+           cards.every(function (c) { return c.c === cards[0].c; });
+  }
+  function value(cards) {
+    return Number(cards.map(function (c) { return c.n; }).sort(function (a, b) { return b - a; }).join(''));
+  }
+  function say(t) { G.log.push(t); if (G.log.length > 40) G.log.shift(); }
+
+  function newGame(nBots, target, allBots, level) {
+    level = level || 'normal';
+    var players = [{ name: 'Vos', human: !allBots, hand: [], level: level }];
+    shuffle(BOT_NAMES.slice()).slice(0, nBots).forEach(function (n) {
+      players.push({ name: n, human: false, hand: [], level: level });
+    });
+    if (allBots) players[0].name = 'Odín';
+    G = {
+      players: players, target: target,
+      scores: players.map(function () { return 0; }),
+      handStarter: Math.floor(Math.random() * players.length),
+      handNo: 0, log: [], level: level
+    };
+    dealHand();
+  }
+
+  function newSeatGame(names, target) {
+    G = {
+      players: names.map(function (n) { return { name: n, human: true, hand: [], level: 'normal' }; }),
+      target: target, scores: names.map(function () { return 0; }),
+      handStarter: Math.floor(Math.random() * names.length), handNo: 0, log: [], level: 'normal', online: true
+    };
+    dealHand();
+  }
+
+  function dealHand() {
+    var g = G, n = g.players.length;
+    var colors = n === 2 ? shuffle([0, 1, 2, 3, 4, 5]).slice(0, 4) : [0, 1, 2, 3, 4, 5];
+    var deck = [];
+    colors.forEach(function (c) { for (var k = 1; k <= 9; k++) deck.push({ id: c * 10 + k, n: k, c: c }); });
+    shuffle(deck);
+    g.players.forEach(function (p) { p.hand = deck.splice(0, 9); });
+    g.handNo += 1;
+    g.table = []; g.tableOwner = -1; g.passes = 0;
+    g.passed = g.players.map(function () { return false; });
+    g.current = g.handStarter;
+    g.phase = 'play'; g.pending = null; g.handWinner = -1; g.winners = [];
+    g.log = []; g.roundEnd = null;
+    say('Mano ' + g.handNo + '. Arranca ' + g.players[g.current].name + '.');
+  }
+
+  function enumPlays(hand, table) {
+    var out = [], seen = {};
+    var groups = [];
+    for (var k = 1; k <= 9; k++) groups.push(hand.filter(function (c) { return c.n === k; }));
+    for (var c = 0; c < 6; c++) groups.push(hand.filter(function (x) { return x.c === c; }));
+    var tv = table.length ? value(table) : 0;
+    groups.forEach(function (grp) {
+      var len = grp.length;
+      for (var mask = 1; mask < (1 << len); mask++) {
+        var cards = [];
+        for (var i = 0; i < len; i++) if (mask & (1 << i)) cards.push(grp[i]);
+        if (table.length && cards.length !== table.length && cards.length !== table.length + 1) continue;
+        var key = cards.map(function (x) { return x.id; }).sort(function (a, b) { return a - b; }).join('-');
+        if (seen[key]) continue;
+        seen[key] = 1;
+        if (table.length && value(cards) <= tv) continue;
+        out.push(cards);
+      }
+    });
+    return out;
+  }
+
+  function scorePlay(hand, cards, table, noisy) {
+    var k = cards.length;
+    var emptied = k === hand.length;
+    var net = emptied ? k + 5 : (table.length ? k - 1 : k);
+    var v = value(cards) / Math.pow(10, k);
+    return net * 3 - 2 * v + (noisy ? Math.random() * 0.4 : 0) + (emptied ? 20 : 0);
+  }
+
+  function bestPlay(hand, table, noisy) {
+    var plays = enumPlays(hand, table), best = null, bs = -1e9;
+    plays.forEach(function (c) {
+      var s = scorePlay(hand, c, table, noisy);
+      if (s > bs) { bs = s; best = c; }
+    });
+    return best;
+  }
+
+  function minOppOf(pi) {
+    return Math.min.apply(null, G.players.filter(function (_, i) { return i !== pi; }).map(function (o) { return o.hand.length; }));
+  }
+  function mainColor(hand) {
+    var cc = [0, 0, 0, 0, 0, 0];
+    hand.forEach(function (c) { cc[c.c]++; });
+    var b = 0;
+    for (var c = 1; c < 6; c++) if (cc[c] > cc[b]) b = c;
+    return b;
+  }
+  function bestBy(list, f) {
+    var b = null, bs = -1e18;
+    list.forEach(function (x) { var s = f(x); if (s > bs) { bs = s; b = x; } });
+    return b;
+  }
+  // Experto: abre con lo que no es su color principal, no pasa nunca y bloquea con sets grandes
+  function expertChoice(pi) {
+    var hand = G.players[pi].hand, t = G.table;
+    var plays = enumPlays(hand, t);
+    if (!plays.length) return null;
+    var out = plays.filter(function (p) { return p.length === hand.length; });
+    if (out.length) return out[0];
+    var m = minOppOf(pi);
+    var blk = plays.filter(function (p) { return p.length > m; });
+    if (blk.length) return bestBy(blk, function (p) { return scorePlay(hand, p, t, false); });
+    if (t.length) return bestBy(plays, function (p) { return scorePlay(hand, p, t, false); });
+    var mc = mainColor(hand);
+    return bestBy(plays, function (p) {
+      var main = p.filter(function (c) { return c.c === mc; }).length;
+      return (p.length - main) * 10 - main * 15 - value(p) / Math.pow(10, p.length);
+    });
+  }
+
+  function botDecide(pi) {
+    var g = G, p = g.players[pi], t = g.table;
+    if (p.level === 'experto') {
+      var pick = expertChoice(pi);
+      return pick ? { cards: pick } : { pass: true };
+    }
+    var best = bestPlay(p.hand, t, true);
+    if (!best) return { pass: true };
+    if (t.length) {
+      var net = best.length === p.hand.length ? 9 : best.length - 1;
+      var minOpp = Math.min.apply(null, g.players.filter(function (_, i) { return i !== pi; }).map(function (o) { return o.hand.length; }));
+      if (net <= 0 && minOpp > 2) {
+        var vn = value(best) / Math.pow(10, best.length);
+        if (vn > 0.55 || Math.random() < 0.35) return { pass: true };
+      }
+    }
+    return { cards: best };
+  }
+
+  function botTake(p, options) {
+    var best = null, bs = -1;
+    options.forEach(function (o) {
+      var s = 0;
+      p.hand.forEach(function (h) { if (h.n === o.n) s += 1; if (h.c === o.c) s += 1; });
+      s += o.n * 0.05 + Math.random() * 0.3;
+      if (s > bs) { bs = s; best = o; }
+    });
+    return best;
+  }
+
+  function endHand(pi) {
+    var g = G;
+    g.handWinner = pi;
+    g.finalPlay = g.table.slice();
+    g.handPoints = g.players.map(function (p) { return p.hand.length; });
+    g.players.forEach(function (p, i) { g.scores[i] += p.hand.length; });
+    var max = Math.max.apply(null, g.scores);
+    if (max >= g.target) {
+      g.phase = 'gameover';
+      var min = Math.min.apply(null, g.scores);
+      g.winners = [];
+      g.scores.forEach(function (s, i) { if (s === min) g.winners.push(i); });
+    } else {
+      g.phase = 'handover';
+    }
+    return 'end';
+  }
+
+  function applyPlay(pi, cards) {
+    var g = G, p = g.players[pi], prev = g.table;
+    p.hand = p.hand.filter(function (c) { return cards.indexOf(c) < 0; });
+    g.table = cards; g.tableOwner = pi; g.passes = 0; g.roundEnd = null;
+    g.passed = g.players.map(function () { return false; });
+    say(p.name + ' jugó ' + cards.map(lbl).join(', ') + (cards.length > 1 ? ' (vale ' + value(cards) + ')' : '') + '.');
+    if (!p.hand.length) {
+      say(p.name + ' se quedó sin cartas.');
+      return endHand(pi);
+    }
+    if (prev.length === 0) return 'next';
+    if (prev.length === 1) {
+      p.hand.push(prev[0]);
+      say(p.name + ' robó ' + lbl(prev[0]) + '.');
+      return 'next';
+    }
+    g.pending = { pi: pi, options: prev };
+    return 'take';
+  }
+
+  function applyTake(card) {
+    var g = G, pend = g.pending, p = g.players[pend.pi];
+    p.hand.push(card);
+    say(p.name + ' robó ' + lbl(card) + ' y descartó ' + (pend.options.length - 1) + '.');
+    g.pending = null;
+    return 'next';
+  }
+
+  function applyPass(pi, auto) {
+    var g = G, n = g.players.length;
+    g.passes += 1; g.passed[pi] = true;
+    say(g.online ? g.players[pi].name + (auto ? ' no tenía jugada y pasó.' : ' pasó.')
+      : (auto ? 'No tenías ninguna jugada posible: pasaste automáticamente.' : (g.players[pi].human ? 'Pasaste.' : g.players[pi].name + ' pasó.')));
+    if (g.passes >= n - 1) {
+      g.current = g.tableOwner;
+      g.roundEnd = { cards: g.table, owner: g.tableOwner, starter: g.current };
+      g.table = []; g.tableOwner = -1; g.passes = 0;
+      g.passed = g.players.map(function () { return false; });
+      say('Terminó la ronda y se descartó la mesa. Arranca ' + g.players[g.current].name + '.');
+      return 'round';
+    }
+    return 'next';
+  }
+  //ENGINE_END
+
+  window.__odinEngine = { expertChoice: expertChoice, newGame: newGame, botDecide: botDecide, botTake: botTake, applyPlay: applyPlay, applyPass: applyPass, applyTake: applyTake, dealHand: dealHand, kick: function () { render(); schedule(); }, get G() { return G; } };
+
+  /* ---------- UI ---------- */
+  var $ = function (id) { return document.getElementById(id); };
+  // una runa por color, trazada a mano: Tiwaz, Fehu, Berkano, Laguz, Algiz, Gebo
+  var SYM = [
+    'M12 3 V21 M12 3.5 L6.5 9.5 M12 3.5 L17.5 9.5',
+    'M8.5 3 V21 M8.5 9 L16.5 3.5 M8.5 14.5 L16.5 9',
+    'M8 3 V21 M8 3.2 L15.5 7.6 L8 12 L15.5 16.4 L8 20.8',
+    'M9 3 V21 M9 3.2 L16.5 9',
+    'M12 3 V21 M12 11.5 L6 4 M12 11.5 L18 4',
+    'M6 4 L18 20 M18 4 L6 20'
+  ];
+  function sym(c, cls) {
+    return '<svg class="sym ' + cls + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path filter="url(#roughSm)" d="' + SYM[c] + '"/></svg>';
+  }
+  function cardHTML(c, o) {
+    o = o || {};
+    var tag = o.interactive ? 'button type="button"' : 'div';
+    var close = o.interactive ? 'button' : 'div';
+    var cls = 'card' + (o.sel ? ' sel' : '') + (o.big ? ' big' : '') + (o.mini ? ' mini' : '') + (o.dim ? ' dim' : '') + (o.pick ? ' pick' : '');
+    var extra = o.interactive ? ' data-id="' + c.id + '" aria-pressed="' + (o.sel ? 'true' : 'false') + '"' : '';
+    return '<' + tag + ' class="' + cls + '" style="--suit:var(--c' + c.c + ')"' + extra +
+      ' aria-label="' + c.n + ' ' + COLORS[c.c] + '">' + sym(c.c, 'tl') + '<span class="num">' + c.n + '</span>' + sym(c.c, 'br') + '</' + close + '>';
+  }
+
+  function myTurn() { return !!G && MY >= 0 && G.phase === 'play' && !G.pending && G.current === MY && G.players[MY].human; }
+  var NOBODY = { name: 'Vos', human: false, hand: [] };
+  function me() { return (G && G.players[MY]) || NOBODY; }
+  function nameOf(i) { return i === MY ? 'Vos' : G.players[i].name; }
+
+  function check(cards) {
+    var t = G.table, tv = t.length ? value(t) : 0;
+    if (!cards.length) {
+      if (!t.length) {
+        if (isSet(me().hand)) return { ok: false, msg: 'Tenés todas las cartas del mismo número o color. Elegí todas y cerrás la mano.' };
+        return { ok: false, msg: 'Arrancás la ronda: elegí una carta, o varias del mismo número o del mismo color.' };
+      }
+      if (!enumPlays(me().hand, t).length) return { ok: false, msg: 'No tenés ninguna jugada posible. Pasás automáticamente…' };
+      return { ok: false, msg: 'Jugá ' + t.length + ' o ' + (t.length + 1) + ' cartas que valgan más que ' + tv + '. Si no te sirve, pasá.' };
+    }
+    if (!isSet(cards)) return { ok: false, msg: 'Para jugar varias juntas tienen que ser del mismo número o del mismo color.' };
+    if (t.length && cards.length !== t.length && cards.length !== t.length + 1)
+      return { ok: false, msg: 'En la mesa hay ' + pl(t.length, 'carta', 'cartas') + ': jugá ' + t.length + ' o ' + (t.length + 1) + '.' };
+    var v = value(cards);
+    if (t.length && v <= tv) return { ok: false, msg: 'Valen ' + v + ' y no superan ' + tv + '.' };
+    return { ok: true, msg: 'Valen ' + v + (t.length ? ' (más que ' + tv + ')' : '') + '. ¡Jugalas!' };
+  }
+
+  function selectedCards() {
+    return me().hand.filter(function (c) { return selected.has(c.id); });
+  }
+
+  function renderSeats() {
+    var g = G;
+    $('seats').classList.toggle('many', g.players.length > 2);
+    $('seats').innerHTML = g.players.map(function (p, i) {
+      var active = g.phase === 'play' && g.current === i;
+      var lvl = p.human ? '' : '<span class="lvl' + (p.level === 'experto' ? ' pro' : '') + '">' + (p.level === 'experto' ? 'Experto' : 'Normal') + '</span>';
+      return '<div class="seat' + (active ? ' active' : '') + '"><b>' + esc(nameOf(i)) + lvl + '</b>' +
+        '<span class="cnt' + (p.hand.length <= 2 ? ' low' : '') + '"><span class="backs" aria-hidden="true">' +
+          new Array(Math.min(p.hand.length, 12) + 1).join('<i></i>') + '</span><strong>' + p.hand.length + '</strong>' +
+          (p.hand.length === 1 ? 'carta' : 'cartas') + '</span>' +
+        '<span class="meta"><span class="pts">' + g.scores[i] + '</span> pts</span>' +
+        '<span class="tag">' + (offline(i) ? 'sin conexión' : (g.passed[i] ? 'pasó' : (active ? 'su turno' : ''))) + '</span></div>';
+    }).join('');
+    $('sub').textContent = g.online
+      ? 'Online · sala ' + NET.code + ' · ' + pl(g.players.length, 'jugador', 'jugadores') + ' · a ' + g.target + ' puntos'
+      : pl(g.players.length, 'jugador', 'jugadores') + ' · bots ' + (g.level === 'experto' ? 'Experto' : 'Normal') + ' · a ' + g.target + ' puntos · gana el que tenga menos';
+  }
+
+  function renderTable() {
+    var g = G, t = g.table;
+    $('tableVal').innerHTML = t.length ? '<small>Valor en mesa</small>' + value(t) : '';
+    $('tableLbl').textContent = 'Mesa';
+    var tc = $('tableCards');
+    if (t.length) {
+      tc.innerHTML = t.map(function (c) { return cardHTML(c, { big: true, dim: !!g.pending }); }).join('');
+      $('tableOwner').textContent = g.tableOwner === MY ? 'Jugaste vos' : 'Jugó ' + g.players[g.tableOwner].name;
+    } else {
+      if (g.roundEnd) {
+        var re = g.roundEnd;
+        tc.innerHTML = '<div class="takeBox"><p class="takeMsg">' + (re.owner === MY ? 'Ganaste la ronda' : 'Ronda de ' + esc(g.players[re.owner].name)) + ' · se descartan</p><div class="row">' +
+          re.cards.map(function (c) { return cardHTML(c, { big: true, dim: true }); }).join('') + '</div></div>';
+      } else {
+        tc.innerHTML = '<p class="empty">Mesa vacía. ' + (g.phase === 'play' ? (g.current === MY ? 'Arrancás vos.' : 'Arranca ' + esc(g.players[g.current].name) + '.') : '') + '</p>';
+      }
+      $('tableOwner').textContent = '';
+    }
+    var tb = $('takeBox');
+    if (g.pending && g.pending.pi === MY) {
+      tb.hidden = false;
+      $('takeRow').innerHTML = g.pending.options.map(function (c) { return cardHTML(c, { interactive: true, big: true, pick: true }); }).join('');
+    } else {
+      tb.hidden = true; $('takeRow').innerHTML = '';
+    }
+  }
+
+  function renderHand() {
+    var g = G, hand = me().hand.slice();
+    selected.forEach(function (id) { if (!hand.some(function (c) { return c.id === id; })) selected.delete(id); });
+    hand.sort(sortMode === 'color' ? function (a, b) { return a.c - b.c || a.n - b.n; } : function (a, b) { return a.n - b.n || a.c - b.c; });
+    var can = myTurn();
+    $('hand').innerHTML = hand.map(function (c) {
+      return cardHTML(c, { interactive: can, sel: selected.has(c.id) });
+    }).join('');
+    if (!can) {
+      $('hand').querySelectorAll('.card').forEach(function (el) { el.setAttribute('aria-disabled', 'true'); });
+    }
+    $('btnSort').textContent = sortMode === 'color' ? 'Ordenar por número' : 'Ordenar por color';
+  }
+
+  function renderControls() {
+    var g = G, can = myTurn();
+    var sel = selectedCards();
+    var res = can ? check(sel) : { ok: false, msg: '' };
+    var hint = $('hint');
+    if (g.phase === 'play' && g.pending) hint.textContent = g.pending.pi === MY ? 'Elegí la carta que querés robar.' : 'Esperá: ' + g.players[g.pending.pi].name + ' está robando.';
+    else if (can) hint.textContent = res.msg;
+    else if (g.phase === 'play') hint.textContent = 'Esperá: juega ' + g.players[g.current].name + '.';
+    else hint.textContent = '';
+    hint.className = 'hint' + (res.ok ? ' ok' : '');
+    $('btnPlay').disabled = !(can && res.ok);
+    $('btnPass').disabled = !(can && g.table.length > 0);
+    $('btnHint').disabled = !(can && (g.table.length === 0 || enumPlays(me().hand, g.table).length > 0));
+    if (g.phase === 'play') {
+      $('turn').textContent = g.pending ? (g.pending.pi === MY ? 'Robá una carta' : 'Roba ' + g.players[g.pending.pi].name + '…') : (can ? 'Tu turno' : 'Juega ' + g.players[g.current].name + '…');
+    } else {
+      $('turn').textContent = g.phase === 'gameover' ? 'Partida terminada' : 'Mano terminada';
+    }
+    var lines = g.log.slice(-4);
+    $('log').innerHTML = lines.map(function (l) { return '<li>' + esc(l) + '</li>'; }).join('');
+  }
+
+  function renderOverlay() {
+    var g = G, ov = $('ovResult');
+    if (g.phase !== 'handover' && g.phase !== 'gameover') { ov.hidden = true; return; }
+    var over = g.phase === 'gameover';
+    var winnerName = g.players[g.handWinner].name;
+    var key = g.handNo + (over ? 'g' : 'h');
+    if (g.resKey !== key) {
+      g.resKey = key;
+      g.res = resultText(over);
+      if (g.res.mood === 'game') celebrate(1);
+      else if (g.res.mood === 'hand') celebrate(0.55);
+    }
+    $('resTitle').textContent = g.res.title;
+    $('resSub').textContent = g.res.sub;
+    $('resEmoji').innerHTML = g.res.emoji ? ART[g.res.emoji] : '';
+    $('resEmoji').hidden = !g.res.emoji;
+    var panel = ov.querySelector('.panel');
+    panel.classList.toggle('win', g.res.mood !== 'lose');
+    panel.classList.toggle('bigwin', g.res.mood === 'game');
+    var fp = g.finalPlay || [];
+    var closer = g.handWinner === MY ? 'Tu jugada final' : 'Jugada final de ' + winnerName;
+    $('resFinal').innerHTML = fp.length
+      ? '<p class="lbl">' + closer + (fp.length > 1 ? ' · vale ' + value(fp) : '') + '</p><div class="row">' +
+        fp.map(function (c) { return cardHTML(c, { big: true }); }).join('') + '</div>'
+      : '';
+    var lead = Math.min.apply(null, g.scores);
+    $('resRows').innerHTML = g.players.map(function (p, i) {
+      var left = p.hand.slice().sort(function (a, b) { return a.c - b.c || a.n - b.n; });
+      var leftHTML = left.length
+        ? '<div class="left">' + left.map(function (c) { return cardHTML(c, { mini: true }); }).join('') + '</div>'
+        : '<div class="left none">Sin cartas</div>';
+      return '<li class="' + (g.scores[i] === lead ? 'lead' : '') + '"><span>' + esc(nameOf(i)) + '</span><span class="add">+' + g.handPoints[i] + '</span><span class="tot">total ' + g.scores[i] + '</span>' + leftHTML + '</li>';
+    }).join('');
+    $('resBtns').innerHTML = over
+      ? '<button class="btn primary" id="btnAgain" type="button">Jugar de nuevo</button>' + (g.online ? '' : '<button class="btn ghost" id="btnSettings" type="button">Cambiar ajustes</button>')
+      : '<button class="btn primary" id="btnNext" type="button">Siguiente mano</button>';
+    ov.hidden = false;
+    var first = $('resBtns').querySelector('button');
+    if (first && !first.dataset.f) { first.dataset.f = '1'; try { first.focus(); } catch (e) {} }
+  }
+
+  /* ---------- festejo ---------- */
+  var ART = {
+    horn: '<svg viewBox="0 0 100 100"><g filter="url(#rough)" stroke="#2b1d11" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">' +
+      '<path d="M12 90 C 22 66, 42 46, 64 30 L 84 48 C 64 60, 40 74, 18 93 Z" fill="#ead9b0"/>' +
+      '<path d="M45 46 L 58 61 M 30 62 L 41 75" stroke="#c78823" stroke-width="6"/>' +
+      '<path d="M64 30 C 72 24, 88 38, 84 48 C 78 50, 68 40, 64 30 Z" fill="#c78823"/>' +
+      '<g fill="#fff6dc" stroke-width="2"><circle cx="66" cy="25" r="5"/><circle cx="75" cy="21" r="5.5"/><circle cx="84" cy="27" r="5"/><circle cx="89" cy="36" r="4.5"/></g>' +
+      '<path d="M86 48 q 3 7 0 12" fill="none" stroke="#fff6dc" stroke-width="3"/></g></svg>',
+    hammer: '<svg viewBox="0 0 100 100"><g filter="url(#rough)" stroke-linecap="round" stroke-linejoin="round">' +
+      '<g stroke="#f3c66a" stroke-width="2.5" opacity=".75"><path d="M50 66 L 8 52 M50 66 L 6 74 M50 66 L 92 52 M50 66 L 94 74 M50 66 L 22 96 M50 66 L 78 96"/></g>' +
+      '<g stroke="#1c120a" stroke-width="3">' +
+      '<circle cx="50" cy="11" r="6.5" fill="none" stroke="#e0a63e" stroke-width="4.5"/>' +
+      '<path d="M43 17 H57 V50 H43 Z" fill="#7b5a3a"/>' +
+      '<path d="M44 24 H56 M44 32 H56 M44 40 H56" stroke="#e0a63e" stroke-width="2.4"/>' +
+      '<path d="M18 50 H82 L88 79 C 73 93, 27 93, 12 79 Z" fill="#aeb2b6"/>' +
+      '<path d="M18 50 H82 L84 58 H16 Z" fill="#e0a63e"/>' +
+      '<path d="M40 72 L50 64 L60 72 L50 82 Z" fill="none" stroke="#3a3833" stroke-width="2.6"/>' +
+      '<circle cx="28" cy="73" r="3.2" fill="#3a3833"/><circle cx="72" cy="73" r="3.2" fill="#3a3833"/></g></g></svg>'
+  };
+  var HAND_WIN = ['¡Por las barbas de Odín!', '¡Tremendo cierre!', '¡Mano tuya, crack!', '¡Los dejaste secos!', '¡Thor aplaude desde Asgard!', '¡Eso es jugar como un dios nórdico!'];
+  var GAME_WIN = ['¡CAMPEÓN DEL VALHALLA!', '¡Odín está orgulloso de vos!', '¡Ganaste la partida, máquina!', '¡Victoria épica!'];
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function ptsTxt(n) { return n + (n === 1 ? ' punto' : ' puntos'); }
+
+  function resultText(over) {
+    var g = G, human = me().human, others = g.players.filter(function (p, i) { return i !== MY; });
+    var winnerName = g.players[g.handWinner].name;
+    if (over) {
+      var names = g.winners.map(function (i) { return g.players[i].name; });
+      if (human && g.winners.indexOf(MY) >= 0) {
+        return {
+          mood: 'game', emoji: 'hammer',
+          title: names.length > 1 ? '¡Victoria compartida!' : pick(GAME_WIN),
+          sub: 'Terminaste con ' + ptsTxt(g.scores[MY]) + '. ' +
+            others.map(function (p) { return p.name + ' quedó con ' + g.scores[g.players.indexOf(p)]; }).join(', ') + '.'
+        };
+      }
+      return { mood: 'lose', emoji: '', title: 'Ganó ' + names.join(' y '), sub: 'Alguien llegó a ' + g.target + ' puntos. Gana el que tiene menos. ¡La revancha es tuya!' };
+    }
+    if (human && g.handWinner === MY) {
+      return {
+        mood: 'hand', emoji: 'horn', title: pick(HAND_WIN),
+        sub: 'Te quedaste sin cartas. ' + others.map(function (p) { return p.name + ' se come ' + ptsTxt(p.hand.length); }).join(' y ') + '.'
+      };
+    }
+    return {
+      mood: 'lose', emoji: '',
+      title: (others.length === 1 ? 'Te cerró ' : 'Cerró ') + winnerName,
+      sub: winnerName + ' se quedó sin cartas. Vos sumás ' + ptsTxt(me().hand.length) + '.'
+    };
+  }
+
+  var confettiRAF = 0;
+  function celebrate(power) {
+    try {
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var cv = $('confetti'), ctx = cv.getContext('2d');
+      if (!ctx) return;
+      var dpr = Math.min(window.devicePixelRatio || 1, 2), W = window.innerWidth, H = window.innerHeight;
+      cv.width = W * dpr; cv.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var cs = getComputedStyle(document.documentElement);
+      var cols = [0, 1, 2, 3, 4, 5].map(function (i) { return cs.getPropertyValue('--c' + i).trim() || '#e2a92b'; });
+      cols.push(cs.getPropertyValue('--accent').trim() || '#e2a92b');
+      var parts = [], n = Math.round(170 * power);
+      for (var i = 0; i < n; i++) {
+        var side = i % 2 ? 1 : -1;
+        parts.push({
+          x: W / 2 + side * W * 0.3 * Math.random(), y: H * 0.4,
+          vx: (Math.random() - 0.5) * 13 + side * 2.5, vy: -(7 + Math.random() * 12) * Math.max(power, 0.75),
+          w: 6 + Math.random() * 6, h: 9 + Math.random() * 8, r: Math.random() * 6.28, vr: (Math.random() - 0.5) * 0.4,
+          c: cols[i % cols.length]
+        });
+      }
+      cv.hidden = false;
+      cancelAnimationFrame(confettiRAF);
+      var t0 = performance.now(), dur = 2400 + 2200 * power;
+      var frame = function (t) {
+        var el = t - t0;
+        ctx.clearRect(0, 0, W, H);
+        ctx.globalAlpha = Math.max(0, Math.min(1, 1.4 - el / dur));
+        parts.forEach(function (p) {
+          p.vy += 0.32; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+          ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.max(0.25, Math.abs(Math.cos(p.r * 1.7))));
+          ctx.restore();
+        });
+        if (el < dur) confettiRAF = requestAnimationFrame(frame);
+        else { ctx.clearRect(0, 0, W, H); cv.hidden = true; }
+      };
+      confettiRAF = requestAnimationFrame(frame);
+    } catch (e) { /* sin festejo si el canvas no está disponible */ }
+  }
+
+  // tamaño de carta según el espacio que de verdad hay en esta pantalla
+  function fitCards() {
+    var w = document.querySelector('.wrap'), t = document.querySelector('.table'), h = $('hand');
+    if (!w || !t || !h) return;
+    var land = window.matchMedia && window.matchMedia('(orientation: landscape) and (min-width: 560px)').matches;
+    var cs = getComputedStyle(t);
+    var headW = parseFloat(cs.gridTemplateColumns) || 100;
+    var byTable = (t.clientHeight - 30) / 1.4;
+    var byHand = land ? (h.clientHeight - 24) / 1.4 : (h.clientHeight - 32) / 2.8;
+    var byWidth = land ? (h.clientWidth - 16 - 8 * 6) / 9 : (h.clientWidth - 16 - 4 * 6) / 5;
+    var cw = Math.max(28, Math.min(byTable, byHand, byWidth, land ? 72 : 62) * 0.92);
+    w.style.setProperty('--cwh', cw.toFixed(1) + 'px');
+    tableFit();
+  }
+  // las cartas de la mesa se achican solo si hay muchas
+  function tableFit() {
+    var t = document.querySelector('.table'), w = document.querySelector('.wrap');
+    if (!t || !w) return;
+    var cwh = parseFloat(getComputedStyle(w).getPropertyValue('--cwh')) || 56;
+    var picking = !$('takeBox').hidden;
+    var area = picking ? $('takeBox') : $('tableCards');
+    var n = area.querySelectorAll('.card').length || 1;
+    var boxed = picking || !!area.querySelector('.takeBox');
+    var cs = getComputedStyle(t);
+    var headW = parseFloat(cs.gridTemplateColumns) || 100;
+    var areaW = t.clientWidth - headW - (parseFloat(cs.columnGap) || 10) - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - (boxed ? 24 : 4);
+    var fitW = (areaW - (n - 1) * 8) / n / (boxed ? 0.85 : 1);
+    t.style.setProperty('--cwt', Math.max(22, Math.min(cwh, fitW)).toFixed(1) + 'px');
+  }
+  window.addEventListener('resize', fitCards);
+  try { var ro = new ResizeObserver(function () { fitCards(); }); ['.wrap', '.table', '#hand'].forEach(function (q) { ro.observe(document.querySelector(q)); }); } catch (e) {}
+  try { document.fonts && document.fonts.ready.then(fitCards); } catch (e) {}
+
+  function render() {
+    if (!G) return;
+    renderSeats(); renderTable(); tableFit(); renderHand(); renderControls(); renderOverlay();
+    if (NET.mode === 'host') broadcast();
+  }
+
+  function schedule() {
+    clearTimeout(timer);
+    var g = G;
+    if (g.phase !== 'play' || g.pending) return;
+    if (g.players[g.current].human) {
+      // sin jugada posible: pasa solo después de un momento, para que se vea el aviso
+      if (g.table.length && !enumPlays(g.players[g.current].hand, g.table).length) {
+        timer = setTimeout(function () {
+          if (G !== g || g.phase !== 'play' || g.pending || !g.players[g.current].human) return;
+          selected.clear();
+          proceed(applyPass(g.current, true));
+        }, 1300);
+      }
+      return;
+    }
+    timer = setTimeout(function () {
+      if (G !== g || g.phase !== 'play' || g.pending) return;
+      var pi = g.current, d = botDecide(pi);
+      proceed(d.pass ? applyPass(pi) : applyPlay(pi, d.cards));
+    }, 1000);
+  }
+
+  function proceed(res) {
+    var g = G;
+    if (res === 'take') {
+      var pend = g.pending;
+      if (g.players[pend.pi].human) { render(); return; }
+      applyTake(botTake(g.players[pend.pi], pend.options));
+      res = 'next';
+    }
+    if (res === 'next') g.current = (g.current + 1) % g.players.length;
+    render();
+    schedule();
+  }
+
+  function startNew() {
+    clearTimeout(timer);
+    selected.clear();
+    newGame(settings.bots, settings.target, false, settings.level);
+    $('ovSetup').hidden = true;
+    render();
+    fitCards();
+    schedule();
+  }
+
+  /* ---------- eventos ---------- */
+  $('hand').addEventListener('click', function (e) {
+    var el = e.target.closest('button.card');
+    if (!el || !myTurn()) return;
+    var id = Number(el.getAttribute('data-id'));
+    if (selected.has(id)) selected.delete(id); else selected.add(id);
+    renderHand(); renderControls();
+  });
+  $('takeRow').addEventListener('click', function (e) {
+    var el = e.target.closest('button.card');
+    if (!el || !G.pending) return;
+    var id = Number(el.getAttribute('data-id'));
+    var card = G.pending.options.filter(function (c) { return c.id === id; })[0];
+    if (!card) return;
+    act('take', [id]);
+  });
+  $('btnPlay').addEventListener('click', function () {
+    if (!myTurn()) return;
+    var cards = selectedCards();
+    if (!check(cards).ok) return;
+    selected.clear();
+    act('play', cards.map(function (c) { return c.id; }));
+  });
+  $('btnPass').addEventListener('click', function () {
+    if (!myTurn() || !G.table.length) return;
+    selected.clear();
+    act('pass');
+  });
+  $('btnHint').addEventListener('click', function () {
+    if (!myTurn()) return;
+    var best = expertChoice(MY);
+    if (!best) return;
+    selected = new Set(best.map(function (c) { return c.id; }));
+    renderHand(); renderControls();
+  });
+  $('btnSort').addEventListener('click', function () {
+    sortMode = sortMode === 'color' ? 'number' : 'color';
+    renderHand();
+  });
+  $('resBtns').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    if (b.id === 'btnNext') {
+      act('next');
+    } else if (b.id === 'btnAgain') {
+      act('again');
+    } else if (b.id === 'btnSettings') {
+      openSetup();
+    }
+  });
+
+
+  /* ---------- online: salas con código ---------- */
+  function esc(t) { return String(t).replace(/[&<>"']/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]; }); }
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  var NET = { mode: 'local', api: null, apiP: null, sala: null, unsub: null, code: '', gid: '', seats: [], ver: 0, seenVer: 0, actN: 0, seen: {}, peers: [], hostSeen: false };
+  // identificador por pestaña (sobrevive a recargar la misma pestaña)
+  try { NET.cid = sessionStorage.getItem('odin.cid'); } catch (e) {}
+  if (!NET.cid) NET.cid = Math.random().toString(36).slice(2) + Date.now().toString(36);
+  try { sessionStorage.setItem('odin.cid', NET.cid); } catch (e) {}
+
+  function offline(i) {
+    if (!G || !G.online || !NET.seats[i] || NET.seats[i] === NET.cid) return false;
+    return !NET.peers.some(function (p) { return p.presence && p.presence.cid === NET.seats[i]; });
+  }
+  function roomApi() {
+    if (!NET.apiP) {
+      NET.apiP = (window.__odinNearby ? Promise.resolve(window.__odinNearby)
+        : window.claude && window.claude.use ? window.claude.use('room') : Promise.resolve(null))
+        .then(function (r) { NET.api = r; return r; }, function () { return null; });
+    }
+    return NET.apiP;
+  }
+  function myName() { var v = ($('onName').value || '').trim().slice(0, 14); return v || 'Vikingo'; }
+  function newCode() { var a = 'ABCDEFGHJKLMNPQRSTUVWXYZ', c = ''; for (var i = 0; i < 4; i++) c += a[Math.floor(Math.random() * a.length)]; return c; }
+
+  function enterRoom(code, role) {
+    return roomApi().then(function (api) {
+      if (!api) { onMsg('No se pudo conectar. Abrí el juego desde Claude con tu sesión iniciada.'); return false; }
+      leaveRoom(true);
+      onMsg('Conectando…');
+      return api.join('odin-' + code.toLowerCase(), role).then(function (sala) {
+        clearTimeout(timer);
+        NET.sala = sala; NET.code = code; NET.mode = role === 'host' ? 'host-lobby' : 'guest-lobby';
+        NET.seen = {}; NET.seenVer = 0; NET.hostSeen = false; NET.actN = 0;
+        store('odin.name', myName());
+        sala.presence({ role: role, cid: NET.cid, name: myName(), act: null, st: null }).catch(function () {});
+        NET.unsub = sala.onPeers(onPeers, function () { onMsg('Se cortó la conexión con la sala.'); });
+        onMsg(''); renderOnline();
+        return true;
+      }, function (e) {
+        onMsg(e && /^nearby/.test(e.code || '') ? e.message : e && e.code === 'not_permitted' ? 'Esta vista no puede usar salas online.' : 'No se pudo entrar a la sala. Probá de nuevo.');
+        renderOnline();
+        return false;
+      });
+    });
+  }
+  function leaveRoom(quiet) {
+    if (NET.unsub) { try { NET.unsub(); } catch (e) {} }
+    if (NET.sala) { try { NET.sala.leave(); } catch (e) {} }
+    NET.sala = null; NET.unsub = null; NET.peers = [];
+    if (!quiet) { NET.mode = 'local'; NET.code = ''; MY = 0; startNew(); renderOnline(); }
+  }
+  function lobbyPeople() {
+    var seen = {}, out = [];
+    NET.peers.forEach(function (p) {
+      var pr = p.presence || {};
+      if (!pr.cid || seen[pr.cid] || (pr.role !== 'host' && pr.role !== 'guest')) return;
+      seen[pr.cid] = 1;
+      out.push({ cid: pr.cid, name: String(pr.name || 'Vikingo').slice(0, 14), host: pr.role === 'host', me: pr.cid === NET.cid });
+    });
+    out.sort(function (a, b) { return (b.host ? 1 : 0) - (a.host ? 1 : 0); });
+    return out;
+  }
+
+  function onPeers(ch) {
+    NET.peers = ch.peers.slice();
+    if (NET.mode === 'host' || NET.mode === 'host-lobby') {
+      NET.peers.forEach(function (p) {
+        var pr = p.presence || {}, a = pr.act;
+        if (p.sameTab || pr.role !== 'guest' || !a || typeof a.n !== 'number') return;
+        if ((NET.seen[pr.cid] || 0) >= a.n) return;
+        NET.seen[pr.cid] = a.n;
+        if (NET.mode !== 'host' || a.g !== NET.gid) return;
+        var seat = NET.seats.indexOf(pr.cid);
+        if (seat >= 0) applyAction(seat, String(a.k), Array.isArray(a.ids) ? a.ids.slice(0, 12).map(Number) : []);
+      });
+    } else {
+      var host = NET.peers.filter(function (p) { return p.presence && p.presence.role === 'host'; })[0];
+      NET.hostSeen = !!host;
+      var st = host && host.presence.st;
+      if (st && typeof st.v === 'number' && st.v !== NET.seenVer) {
+        NET.seenVer = st.v;
+        try { applyState(st); } catch (e) { /* estado malformado: se ignora */ }
+      }
+    }
+    if (G && G.online) renderSeats();
+    renderOnline();
+  }
+
+  // ---- anfitrión: valida y aplica jugadas de cualquier asiento ----
+  function legal(cards) {
+    var t = G.table;
+    if (!cards.length || !isSet(cards)) return false;
+    if (!t.length) return true;
+    return (cards.length === t.length || cards.length === t.length + 1) && value(cards) > value(t);
+  }
+  function applyAction(seat, kind, ids) {
+    var g = G;
+    if (!g) return false;
+    if (kind === 'play') {
+      if (g.phase !== 'play' || g.pending || g.current !== seat) return false;
+      var hand = g.players[seat].hand, cards = [];
+      for (var i = 0; i < ids.length; i++) {
+        var c = hand.filter(function (h) { return h.id === ids[i]; })[0];
+        if (!c || cards.indexOf(c) >= 0) return false;
+        cards.push(c);
+      }
+      if (!legal(cards)) return false;
+      if (seat === MY) selected.clear();
+      proceed(applyPlay(seat, cards));
+      return true;
+    }
+    if (kind === 'pass') {
+      if (g.phase !== 'play' || g.pending || g.current !== seat || !g.table.length) return false;
+      proceed(applyPass(seat));
+      return true;
+    }
+    if (kind === 'take') {
+      if (!g.pending || g.pending.pi !== seat) return false;
+      var card = g.pending.options.filter(function (o) { return o.id === ids[0]; })[0];
+      if (!card) return false;
+      proceed(applyTake(card));
+      return true;
+    }
+    if (kind === 'next') {
+      if (g.phase !== 'handover') return false;
+      g.handStarter = (g.handStarter + 1) % g.players.length;
+      selected.clear(); dealHand(); render(); schedule();
+      return true;
+    }
+    if (kind === 'again') {
+      if (g.phase !== 'gameover') return false;
+      if (g.online) startOnlineGame(); else startNew();
+      return true;
+    }
+    return false;
+  }
+  function act(kind, ids) {
+    if (NET.mode === 'guest') {
+      if (!NET.sala) return;
+      NET.actN += 1;
+      NET.sala.presence({ act: { n: NET.actN, k: kind, ids: ids || [], g: NET.gid } }).catch(function () {});
+      return;
+    }
+    applyAction(MY, kind, ids || []);
+  }
+  function startOnlineGame() {
+    var people = lobbyPeople().slice(0, 6);
+    if (people.length < 2) return;
+    NET.seats = people.map(function (p) { return p.cid; });
+    NET.gid = Math.random().toString(36).slice(2, 8);
+    NET.mode = 'host'; MY = 0;
+    clearTimeout(timer); selected.clear();
+    newSeatGame(people.map(function (p) { return p.name; }), settings.target);
+    $('ovOnline').hidden = true;
+    render(); fitCards(); schedule();
+  }
+  function packState() {
+    var g = G, ids = function (a) { return a.map(function (c) { return c.id; }); };
+    NET.ver += 1;
+    return {
+      v: NET.ver, gid: NET.gid, code: NET.code, seats: NET.seats, names: g.players.map(function (p) { return p.name; }),
+      hands: g.players.map(function (p) { return ids(p.hand); }), sc: g.scores, tg: g.target, hs: g.handStarter, hn: g.handNo,
+      log: g.log.slice(-4), t: ids(g.table), to: g.tableOwner, ps: g.passes, pd: g.passed.map(function (x) { return x ? 1 : 0; }),
+      cur: g.current, ph: g.phase, pe: g.pending ? { pi: g.pending.pi, o: ids(g.pending.options) } : null,
+      hw: g.handWinner, w: g.winners, hp: g.handPoints || null, fp: g.finalPlay ? ids(g.finalPlay) : null,
+      re: g.roundEnd ? { c: ids(g.roundEnd.cards), o: g.roundEnd.owner, s: g.roundEnd.starter } : null
+    };
+  }
+  function broadcast() {
+    if (!NET.sala || !G || !G.online) return;
+    NET.sala.presence({ st: packState() }).catch(function () {});
+  }
+  // ---- invitado: dibuja el estado que manda el anfitrión ----
+  function applyState(st) {
+    var mk = function (id) { id = Number(id); return { id: id, n: id % 10, c: Math.floor(id / 10) % 6 }; };
+    var cs = function (a) { return (Array.isArray(a) ? a : []).map(mk); };
+    var g = {
+      online: true, level: 'normal', target: st.tg, scores: st.sc, handStarter: st.hs, handNo: st.hn,
+      players: st.names.map(function (n, i) { return { name: String(n).slice(0, 14), human: true, hand: cs(st.hands[i]), level: 'normal' }; }),
+      log: (st.log || []).map(String), table: cs(st.t), tableOwner: st.to, passes: st.ps, passed: (st.pd || []).map(Boolean),
+      current: st.cur, phase: st.ph, pending: st.pe ? { pi: st.pe.pi, options: cs(st.pe.o) } : null,
+      handWinner: st.hw, winners: st.w || [], handPoints: st.hp, finalPlay: st.fp ? cs(st.fp) : null,
+      roundEnd: st.re ? { cards: cs(st.re.c), owner: st.re.o, starter: st.re.s } : null
+    };
+    if (G && G.online && G.resKey && st.gid === NET.gid) { g.resKey = G.resKey; g.res = G.res; }
+    NET.gid = st.gid; NET.seats = st.seats || []; NET.code = st.code || NET.code;
+    MY = NET.seats.indexOf(NET.cid);
+    if (NET.mode === 'guest-lobby') { NET.mode = 'guest'; $('ovOnline').hidden = true; }
+    clearTimeout(timer);
+    G = g;
+    render(); fitCards();
+  }
+
+  // ---- panel Online ----
+  function onMsg(t) { $('onMsg').textContent = t || ''; }
+  function openOnline() {
+    $('ovOnline').hidden = false;
+    if (!$('onName').value) $('onName').value = store('odin.name') || '';
+    renderOnline();
+    roomApi().then(function () { renderOnline(); });
+  }
+  function renderOnline() {
+    var lobby = NET.mode !== 'local';
+    $('onNA').hidden = !(NET.apiP && NET.api === null && !lobby);
+    $('onStart').hidden = lobby || !$('onNA').hidden;
+    $('onLobby').hidden = !lobby;
+    if (!lobby) return;
+    $('onCodeBig').textContent = NET.code;
+    var people = lobbyPeople(), playing = NET.mode === 'host' || NET.mode === 'guest';
+    $('onList').innerHTML = people.map(function (p) {
+      return '<li><span>' + esc(p.name) + (p.me ? ' (vos)' : '') + '</span><span class="add">' + (p.host ? 'anfitrión' : '') + '</span><span class="tot"></span></li>';
+    }).join('') || '<li><span>Conectando…</span></li>';
+    var isHost = NET.mode === 'host-lobby' || NET.mode === 'host';
+    $('btnOnStart').hidden = !isHost || playing;
+    $('btnOnStart').disabled = people.length < 2;
+    $('onLobbyMsg').textContent = playing ? 'Partida en curso.'
+      : isHost ? (people.length < 2 ? 'Pasale el código al otro jugador. Cuando entre, tocá Empezar.' : 'Ya pueden jugar. Hasta 6 jugadores.')
+      : (NET.hostSeen ? 'Esperando que el anfitrión empiece la partida…' : 'Buscando la sala…');
+    $('btnLeave').textContent = NET.leaveArm ? 'Tocá de nuevo para salir' : 'Salir de la sala';
+  }
+  $('btnOnline').addEventListener('click', openOnline);
+  $('btnOnClose').addEventListener('click', function () { $('ovOnline').hidden = true; });
+  $('btnCreate').addEventListener('click', function () { onMsg(''); enterRoom(newCode(), 'host'); });
+  $('btnJoin').addEventListener('click', function () {
+    var code = ($('onCode').value || '').toUpperCase().replace(/[^A-Z]/g, '');
+    if (code.length !== 4) { onMsg('El código tiene 4 letras.'); return; }
+    onMsg(''); enterRoom(code, 'guest');
+  });
+  $('onCode').addEventListener('input', function () { this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4); });
+  $('btnOnStart').addEventListener('click', startOnlineGame);
+  $('btnLeave').addEventListener('click', function () {
+    if (!NET.leaveArm) { NET.leaveArm = true; renderOnline(); setTimeout(function () { NET.leaveArm = false; renderOnline(); }, 3000); return; }
+    NET.leaveArm = false; leaveRoom(false);
+  });
+  $('btnCopy').addEventListener('click', function () {
+    var b = this, done = function () { b.textContent = 'Copiado'; setTimeout(function () { b.textContent = 'Copiar'; }, 1500); };
+    try {
+      navigator.clipboard.writeText(NET.code).then(done, function () { selectCode(); });
+    } catch (e) { selectCode(); }
+  });
+  function selectCode() { try { var r = document.createRange(); r.selectNodeContents($('onCodeBig')); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); } catch (e) {} }
+
+  function segBuild(el, values, key, fmt) {
+    el.innerHTML = values.map(function (v) {
+      return '<button type="button" data-v="' + v + '" aria-pressed="' + (String(settings[key]) === String(v) ? 'true' : 'false') + '">' + fmt(v) + '</button>';
+    }).join('');
+    el.onclick = function (e) {
+      var b = e.target.closest('button');
+      if (!b) return;
+      var raw = b.getAttribute('data-v');
+      settings[key] = isNaN(Number(raw)) ? raw : Number(raw);
+      segBuild(el, values, key, fmt);
+    };
+  }
+  function openSetup() {
+    segBuild($('segBots'), [1, 2, 3, 4, 5], 'bots', function (v) { return String(v); });
+    segBuild($('segTarget'), [10, 15, 20], 'target', function (v) { return v + ' pts'; });
+    segBuild($('segLevel'), ['normal', 'experto'], 'level', function (v) { return v === 'experto' ? 'Experto' : 'Normal'; });
+    $('ovSetup').hidden = false;
+  }
+  $('btnNew').addEventListener('click', function () { if (NET.mode === 'local') openSetup(); else openOnline(); });
+  $('btnCancel').addEventListener('click', function () { $('ovSetup').hidden = true; });
+  $('btnStart').addEventListener('click', startNew);
+  $('btnRules').addEventListener('click', function () { $('ovRules').hidden = false; });
+  $('btnRulesClose').addEventListener('click', function () { $('ovRules').hidden = true; });
+  $('ovRules').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
+
+  startNew();
+  fitCards();
+})();
+</script>
