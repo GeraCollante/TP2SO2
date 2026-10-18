@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+def odinBuild = System.getenv('GITHUB_RUN_NUMBER') ?: '1'
+
 android {
     namespace "com.geracollante.odin"
     compileSdk rootProject.ext.compileSdkVersion
@@ -7,8 +9,8 @@ android {
         applicationId "com.geracollante.odin"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInteger()
-        versionName "1.0." + (System.getenv("GITHUB_RUN_NUMBER") ?: "0")
+        versionCode odinBuild.toInteger()
+        versionName "1.0.${odinBuild}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
